@@ -3,3 +3,8 @@
 .official-logo{display:block;width:min(315px,72vw);height:auto;object-fit:contain}.header .logo{display:inline-flex;align-items:flex-start;flex-shrink:0}.header-inner{min-height:102px}@media(max-width:850px){.header-inner{min-height:unset}.official-logo{width:min(280px,75vw)}}
 
 .preview-banner{padding:10px 18px;text-align:center;background:#fff0bd;color:#493b10;font-size:13px;font-weight:700}.logo:focus-visible,.button:focus-visible,.header nav a:focus-visible{outline:3px solid #DD463C;outline-offset:4px}@media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}}
+/* Palleta: restrained rounded corners */
+.button{border-radius:14px}
+.card,.menu-preview{border-radius:18px}
+.hero-panel,.note,.contact-strip span{border-radius:20px}
+.preview-banner{border-radius:0}
