@@ -4,6 +4,8 @@
 No 1C exports, secrets, .github workflows, CI logs, or unapproved files.
 """
 import argparse
+import base64
+from io import BytesIO
 import re
 import shutil
 from pathlib import Path
@@ -87,8 +89,19 @@ def main():
         raise SystemExit("Approved icon missing from menu assets")
     for size in (192, 512):
         rounded(icon, dest / "assets" / f"app-icon-{size}.png", size)
-    rounded(icon, dest / "assets" / "palleta-favicon-32.png", 32)
-    rounded(icon, dest.parent / "assets" / "palleta-favicon-32.png", 32)
+    # This 32px favicon was derived from the owner's palleta-round-original.png.
+    # Never synthesize it from the independent application's PWA app icon.
+    approved_path = dest.parent / "assets" / "palleta-approved-favicon-32.b64"
+    if not approved_path.is_file():
+        raise SystemExit("Original approved Palleta favicon source is missing")
+    approved_bytes = base64.b64decode(approved_path.read_text().strip(), validate=True)
+    approved_icon = Image.open(BytesIO(approved_bytes)).convert("RGBA")
+    if approved_icon.size != (32, 32):
+        raise SystemExit("Approved favicon must be a 32x32 PNG")
+    for output in (dest / "assets" / "palleta-favicon-32.png",
+                   dest.parent / "assets" / "palleta-favicon-32.png"):
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(approved_bytes)
     rounded(icon, dest.parent / "assets" / "palleta-icon-192.png", 192)
     original = Image.open(icon).convert("RGBA")
     mask = Image.new("L", original.size, 0)
@@ -98,7 +111,7 @@ def main():
     )
     original.putalpha(ImageChops.multiply(original.getchannel("A"), mask))
     for dst in (dest / "favicon.ico", dest.parent / "favicon.ico"):
-        original.save(dst, format="ICO", sizes=[(16, 16), (32, 32), (48, 48), (64, 64)])
+        approved_icon.save(dst, format="ICO", sizes=[(16, 16), (32, 32)])
     # Add favicon references together with the icon in one atomic pull request.
     store_index = dest.parent / "index.html"
     html = store_index.read_text(encoding="utf-8")
