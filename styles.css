@@ -35,3 +35,9 @@ section[id]{scroll-margin-top:120px}
 .button:not(.button-light),
 .button:not(.button-light):hover{background:#97291f}
 @media(max-width:600px){.contact-actions{display:grid;grid-template-columns:1fr 1fr}.contact-link{min-width:0}.contact-link-info{grid-column:1 / -1}section[id]{scroll-margin-top:150px}}
+
+/* Approved subtle corner radii: no changes to the original brand artwork */
+:root{--radius-sm:10px;--radius-md:14px;--radius-lg:16px}
+.button,.contact-link{border-radius:var(--radius-sm)}
+.card,.menu-preview,.note,.contact-strip span{border-radius:var(--radius-md)}
+.hero-panel{border-radius:var(--radius-lg)}
