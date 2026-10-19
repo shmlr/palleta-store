@@ -1,5 +1,5 @@
 'use strict';
-const CACHE='palleta-offline-release-6f33fde4f54d';
+const CACHE='palleta-offline-release-2926484b9357';
 const SHELL=['./','./index.html','./start.html','./app.js','./core.js','./products.json','./recipes.json','./manifest.webmanifest','./assets/app-icon-192.png','./assets/app-icon-512.png','./assets/palleta-favicon-32.png','./favicon.ico','./assets/palleta-logo.webp','./assets/local-point-logo.webp'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('palleta-offline-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
