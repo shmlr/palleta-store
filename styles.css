@@ -19,3 +19,19 @@
 .contact-strip a{color:#fff;text-underline-offset:3px}
 @media(max-width:850px){.hero h1{font-size:clamp(2.05rem,8vw,3.5rem)}.hero-panel{min-height:270px;box-shadow:6px 6px 0 var(--red)}}
 @media(max-width:420px){.hero h1{font-size:clamp(1.9rem,8.1vw,2.7rem)}.hero-panel .panel-head{font-size:1.9rem}.hero-panel .panel-sub{font-size:1.05rem}}
+/* Contact channels: real direct links only; MAX is informational until verified URL is supplied */
+.contact-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.contact-link{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;min-height:50px;min-width:150px;padding:11px 20px;border-radius:14px;border:2px solid #fff;background:#fff;color:var(--blue);text-align:center;font-size:1rem;font-weight:800;text-decoration:none}
+.contact-link small{font-weight:500;font-size:.75rem;margin-top:4px;line-height:1.3}
+.contact-link-info{background:transparent;color:#fff;border-style:dashed;cursor:default}
+.contact-link:hover,.contact-link:focus-visible{background:var(--yellow);border-color:var(--yellow);color:var(--blue)}
+.contact-link-info:hover{background:transparent;color:#fff;border-color:#fff}
+.contact-hint{font-size:.86rem;line-height:1.5;max-width:800px;margin:20px 0 0;color:#e3eaf4}
+.contact-strip strong{white-space:normal}
+section[id]{scroll-margin-top:120px}
+.header nav a{display:inline-flex;align-items:center;min-height:44px}
+:root{--red-readable:#B53229}
+.kicker,.panel-eyebrow{color:var(--red-readable)}
+.button:not(.button-light),.panel-link{background:var(--red-readable)}
+.button:not(.button-light):hover,.panel-link:hover{background:#97291f}
+@media(max-width:600px){.contact-actions{display:grid;grid-template-columns:1fr 1fr}.contact-link{min-width:0}.contact-link-info{grid-column:1 / -1}section[id]{scroll-margin-top:150px}}
