@@ -9,7 +9,7 @@ const qfmt=n=>Number(Number(n).toFixed(3)).toLocaleString('ru-RU');
 const humanDate=d=>/^\d{4}-\d{2}-\d{2}$/.test(String(d||''))?String(d).slice(8,10)+'.'+String(d).slice(5,7)+'.'+String(d).slice(0,4):String(d||'дата неизвестна');
 function refClubCost(it){const p=it.p;if(!p||!['manual_club_snapshot','current_club'].includes(p.price_source)||p.price_type!=='Оптовая, RUB'||!p.price_as_of||!Number.isFinite(p.price)||p.price<0)return null;if(!Number.isFinite(it.packs)||it.packs<0||!Number.isFinite(it.quantity)||it.quantity<0)return null;return Number((p.pricing_mode==='by_pack'?p.price*it.packs:p.price*it.quantity).toFixed(2));}
 const STATUS={in_stock:'подтверждено по выгрузке',unknown:'остаток уточняется',out_of_stock:'нет по выгрузке'};
-let catalog,recipes,step=0,seed=1,fixed={},chosen={},prefs={days:3,people:4,time:60,budget:0,excl:[]},lastPlan;
+let catalog,recipes,step=0,seed=1,fixed={},chosen={},prefs={days:3,people:4,time:60,budget:0,excl:[],attendance:{}},lastPlan;
 let view='home',hasSavedPlan=false;
 let checkedItems=new Set(),homeIngredients=new Set();
 const STORE_KEY='palleta-menu-v1';
@@ -21,12 +21,12 @@ function berbenaHref(content='general'){
  return BERBENA_RECIPES+'?utm_source=palleta_menu&utm_medium=referral&utm_campaign=recipes_to_berbena&utm_content='+encodeURIComponent(token);
 }
 function saveState(){
- try{if(!window.localStorage)return;window.localStorage.setItem(STORE_KEY,JSON.stringify({version:2,step,seed,prefs,fixed,chosen,checked:[...checkedItems],home:[...homeIngredients]}));}catch(e){}
+ try{if(!window.localStorage)return;window.localStorage.setItem(STORE_KEY,JSON.stringify({version:3,step,seed,prefs,fixed,chosen,checked:[...checkedItems],home:[...homeIngredients]}));}catch(e){}
 }
 function loadState(){
  try{
   const s=JSON.parse(window.localStorage?.getItem(STORE_KEY)||'null');if(!s||typeof s!=='object')return;
-  const old=s.version!==2;
+  const old=s.version!==2&&s.version!==3;
   if(Number.isInteger(s.step)&&s.step>=0&&s.step<=(old?4:Q.length))
    step=old?(s.step===4?Q.length:s.step+1):s.step;
   hasSavedPlan=step===Q.length;
@@ -37,6 +37,10 @@ function loadState(){
    prefs.time=[30,45,60,999].includes(s.prefs.time)?s.prefs.time:60;
    prefs.budget=[0,5000,8000,12000].includes(s.prefs.budget)?s.prefs.budget:0;
    prefs.excl=Array.isArray(s.prefs.excl)?s.prefs.excl.filter(x=>['fish','dairy','gluten','eggs'].includes(x)):[];
+   prefs.attendance={};
+   if(s.prefs.attendance&&typeof s.prefs.attendance==='object'&&!Array.isArray(s.prefs.attendance))for(const [k,v] of Object.entries(s.prefs.attendance)){
+    if(/^[0-6]-(breakfast|lunch|dinner)$/.test(k)&&(v==='picnic'||(Number.isInteger(v)&&v>=0&&v<=prefs.people)))prefs.attendance[k]=v;
+   }
   }
   const ids=new Set(recipes.map(r=>r.id));
   if(s.fixed&&typeof s.fixed==='object')for(const [k,v]of Object.entries(s.fixed)){
@@ -65,7 +69,7 @@ function renderHome(){
  else h+='<button class="btn secondary" id="demo-menu">Посмотреть пример меню</button>';
  h+='</div><div class="panel home-about"><h2>Как это работает</h2><p><b>1.</b> Выберите количество человек, время и ограничения.</p><p><b>2.</b> Получите меню, меняйте блюда и подходящие продукты.</p><p><b>3.</b> Отметьте, что уже есть дома, и отправьте оставшуюся корзину в Паллету.</p></div><p class="muted">Клубные цены показаны справочно с датой. Наличие и итоговую сумму подтвердит магазин.</p>';
  $.innerHTML=h;
- document.getElementById('start-menu').onclick=()=>{step=0;seed=1;fixed={};chosen={};checkedItems.clear();homeIngredients.clear();prefs.days=3;hasSavedPlan=false;view='planner';render();};
+ document.getElementById('start-menu').onclick=()=>{step=0;seed=1;fixed={};chosen={};checkedItems.clear();homeIngredients.clear();prefs.days=3;prefs.attendance={};hasSavedPlan=false;view='planner';render();};
  if(hasSavedPlan)document.getElementById('continue-menu').onclick=()=>{step=Q.length;view='planner';render();};
  else document.getElementById('demo-menu').onclick=()=>{step=Q.length;view='planner';render();};
 }
@@ -82,7 +86,7 @@ function renderQuestion(){
  h+='<button class="btn secondary" id="home-from-questions">На главную</button>';
  $.innerHTML=h;
  $.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>{const value=b.dataset.answer;
-  if(q.multi){if(prefs.excl.includes(value))prefs.excl=prefs.excl.filter(x=>x!==value);else prefs.excl.push(value);} else {prefs[q.key]=Number(value);step++;}
+  if(q.multi){if(prefs.excl.includes(value))prefs.excl=prefs.excl.filter(x=>x!==value);else prefs.excl.push(value);} else {prefs[q.key]=Number(value);if(q.key==='people')prefs.attendance={};step++;}
   fixed={};render();
  });
  if(q.multi)document.getElementById('next').onclick=()=>{step=Q.length;render()};
@@ -98,7 +102,7 @@ function alternativesFor(slot){
 }
 function basketText(result){
  let t=`Паллета. Заявка на проверку корзины\nКЛУБНЫЕ ЦЕНЫ: только по карте Паллеты.\n${prefs.days===3?'3 дня':'7 дней'}, завтрак / обед / ужин, на ${prefs.people} чел.\n`;
- for(const slot of result.slots)t+=`${C.DAYS[slot.day]} ${C.MEAL_NAMES[slot.meal]}: ${slot.recipe?slot.recipe.name:'НЕ ПОДОБРАНО'}\n`;
+ for(const slot of result.slots)t+=`${C.DAYS[slot.day]} ${C.MEAL_NAMES[slot.meal]} (${slot.mode==='picnic'?'пикник':slot.people+' чел. дома'}): ${slot.recipe?slot.recipe.name:slot.reason||'НЕ ПОДОБРАНО'}\n`;
  t+='\nКупить в Паллете (предварительная заявка):\n';
  for(const it of result.basket.items){const ref=refClubCost(it);
   const qty=it.p.pricing_mode==='by_weight'?`${qfmt(it.quantity)} ${it.p.unit}`:`${it.packs} уп. по ${qfmt(it.p.pack_size)} ${it.p.unit}`;
@@ -121,7 +125,7 @@ function basketText(result){
 }
 function whatsappOrderText(result){
  const lines=['Здравствуйте! Прошу проверить наличие и собрать продукты в «Паллете» по меню на неделю.',
-  'На '+prefs.people+' чел. · '+prefs.days+' дн. · '+result.filled+' из '+result.totalSlots+' блюд.',
+  'Семья: '+prefs.people+' чел. · '+prefs.days+' дн. · '+result.filled+' блюд, '+result.skipped+' приёмов пищи без готовки дома.',
   'Список покупок:'];
  for(const it of result.basket.items){
   const quantity=it.p.pricing_mode==='by_weight'?qfmt(it.quantity)+' '+it.p.unit:it.packs+' уп. по '+qfmt(it.p.pack_size)+' '+it.p.unit;
@@ -138,16 +142,22 @@ function renderResult(message=''){
  lastPlan=C.plan(catalog,recipes,prefs,{seed,fixed,selected:chosen,atHome:[...homeIngredients]});
  const p=lastPlan,b=p.basket;
  let h='<button class="home-link" id="home-from-result">← На главную</button><div class="bar"><span style="width:100%"></span></div><h1>Семейное меню на '+prefs.days+' '+(prefs.days===3?'дня':'дней')+'</h1><p class="pill">Клубные цены по карте Паллеты</p><div class="note">Цена «Оптовая, RUB» применяется для держателей клубной карты Паллеты. Без карты цена по клубному тарифу не гарантируется. Итоговый чек подтверждается на кассе.</div>';
- h+=`<p class="muted">${prefs.people} чел. · завтрак, обед и ужин · ${p.filled} из ${p.totalSlots} блюд подобрано · ${recipes.length} редакционных рецептов</p>`;
+ h+=`<p class="muted">Семья: ${prefs.people} чел. · ${p.filled} из ${p.activeSlots} домашних блюд подобрано · ${p.skipped} приёмов пищи вне домашней готовки · ${recipes.length} рецептов</p>`;
+ h+='<div class="panel attendance-panel"><h2>Кто ест дома?</h2><p class="small">По умолчанию все дома. Меняйте порции у отдельных блюд или используйте быстрые настройки. Продукты на пикник пока не включаются в корзину.</p><div class="attendance-actions"><button class="btn secondary" id="attendance-all">Все едят дома</button><button class="btn secondary" id="attendance-weekday">Пропустить обеды в будни</button>'+(prefs.days===7?'<button class="btn secondary" id="attendance-picnic">В выходные обед-пикник</button>':'')+'</div></div>';
  if(message)h+=`<div class="note">${esc(message)}</div>`;
  const inStock=catalog.products.filter(x=>x.sold_in_palleta!==false&&C.availability(x,catalog)==='in_stock').length;
- h+=`<div class="note"><b>${inStock?'Часть остатков подтверждена':'Данных 1С о текущих остатках пока нет'}.</b> Каталог автоматически подхватывается из products.json при открытии сайта. Последняя сверка: ${esc(explainSource())}. ${inStock?'Товары с устаревшими отметками показываются как неизвестные.':'Выбор предварительный: «остаток уточняется» не означает отсутствие товара в магазине.'}</div>`;
+ h+=inStock
+  ?`<div class="note"><b>Остатки части товаров проверены.</b> Последняя отметка: ${esc(explainSource())}. Наличие остальных товаров уточнит магазин.</div>`
+  :'<div class="note"><b>Актуальные остатки пока не подтверждены.</b> Меню предварительное. Магазин уточнит наличие, цены и возможные замены.</div>';
  let day=-1;
  for(const slot of p.slots){
    if(slot.day!==day){day=slot.day;h+=`<div class="panel"><h2 class="dayheading">${C.DAYS[day]} · день ${day+1}</h2>`;}
-   h+=`<div class="slot"><div class="slot-head"><strong>${C.MEAL_NAMES[slot.meal]}</strong><span>${slot.recipe?esc(slot.recipe.name):'<span class="error">Блюдо не подобрано</span>'}</span></div>`;
-   if(slot.recipe){h+=`<div class="small">${slot.recipe.minutes} мин · редакционный рецепт</div>`;h+=renderRecipeDetails(slot.recipe);}else h+=`<p class="small warning">${esc(slot.reason)}. Обновите остатки или снимите ограничения.</p>`;
-   const options=alternativesFor(slot);
+   h+=`<div class="slot"><div class="slot-head"><strong>${C.MEAL_NAMES[slot.meal]}</strong><span>${slot.recipe?esc(slot.recipe.name):slot.mode==='picnic'?'Пикник':slot.people===0?'Дома не едим':'<span class="error">Блюдо не подобрано</span>'}</span></div>`;
+   h+=`<details class="meal-attendance-details" data-attendance-key="${esc(slot.key)}"><summary>${slot.mode==='picnic'?'Пикник · изменить':slot.people===0?'Дома не едят · изменить':'Порций: '+slot.people+' · изменить'}</summary><label class="meal-attendance-label">Кто ест дома? <select class="meal-attendance" data-attendance="${esc(slot.key)}" aria-label="${esc(C.MEAL_NAMES[slot.meal])}, день ${slot.day+1}: сколько человек ест дома">`;
+   for(let n=0;n<=prefs.people;n++)h+=`<option value="${n}" ${slot.people===n&&slot.mode!=='picnic'?'selected':''}>${n===0?'Никто дома не ест':n+' чел.'}</option>`;
+   h+=`<option value="picnic" ${slot.mode==='picnic'?'selected':''}>Пикник, корзина отдельно</option></select></label></details>`;
+   if(slot.recipe){h+=`<div class="small">${slot.recipe.minutes} мин · редакционный рецепт · ${slot.people} порций</div>`;h+=renderRecipeDetails(slot.recipe);}else if(slot.people===0)h+=`<p class="small">${esc(slot.reason)}. Для этого приёма пищи продукты не добавлены в список.</p>`;else h+=`<p class="small warning">${esc(slot.reason)}. Обновите остатки или снимите ограничения.</p>`;
+   const options=slot.people===0?[]:alternativesFor(slot);
    if(options.length){h+=`<div class="grid-actions"><select class="slotselect" aria-label="Заменить ${C.MEAL_NAMES[slot.meal].toLowerCase()} дня ${slot.day+1}" data-slot="${esc(slot.key)}"><option value="">Заменить блюдо…</option>`;
      for(const x of options)h+=`<option value="${esc(x.id)}">${esc(x.name)} · ${x.minutes} мин</option>`;
      h+='</select></div>';
@@ -162,7 +172,7 @@ function renderResult(message=''){
  h+=`<p class="small">Позиции: ${b.items.length} · Без свежего остатка: ${b.items.filter(x=>x.stock!=='in_stock').length} · Без свежей цены: ${b.items.filter(x=>!x.priceCurrent).length} · Нехватка: ${b.shortages.length}</p>`;
  const known=b.items.filter(it=>refClubCost(it)!==null&&!it.priceCurrent);
  if(known.length){const estimate=known.reduce((sum,it)=>sum+refClubCost(it),0);h+=`<div class="note"><b>Справочная сумма по ${known.length} из ${b.items.length} позиций: ≈ ${money(estimate)}</b><p class="small">Только товары с известной клубной ценой на дату выгрузки. Это не полная стоимость корзины и не подтверждённый заказ.</p></div>`;}
- if(p.filled<p.totalSlots)h+=`<p class="error">${p.totalSlots-p.filled} блюд не подобрано: в каталоге нет подтверждённых подходящих сочетаний при ваших ограничениях.</p>`;
+ if(p.filled<p.activeSlots)h+=`<p class="error">${p.activeSlots-p.filled} блюд не подобрано: в каталоге нет подтверждённых подходящих сочетаний при ваших ограничениях.</p>`;
  if(prefs.budget){h+=`<p class="small">Бюджет: ${money(prefs.budget)}. ${currentConfirm?b.confirmedTotal<=prefs.budget?'Собранная корзина укладывается в бюджет по данным последней выгрузки.':'Внимание: корзина превышает выбранный бюджет.':'Проверка бюджета заблокирована неполными данными.'}</p>`;}
  h+='</div><div class="panel"><h2>Список покупок в Паллете <span class="pill" id="check-count">'+b.items.filter(x=>checkedItems.has(x.p.id)).length+' / '+b.items.length+' отмечено</span></h2><p class="muted">Отмечайте купленное. Галочки сохраняются на устройстве. Нажмите «Уже есть дома», чтобы убрать продукт из заявки. Значок ≈ — справочная цена.</p>';
  for(const it of b.items){const opts=(it.ing.product_ids||[]).map(id=>catalog.byProduct[id]).filter(x=>C.validProduct(x,it.ing)&&C.availability(x,catalog)!=='out_of_stock');
@@ -215,6 +225,21 @@ h+='<p class="muted">* Соль, вода и специи для многих р
  $.innerHTML=h;
  saveState();
  document.getElementById('home-from-result').onclick=showHome;
+ const setAttendance=(data)=>{prefs.attendance=data;checkedItems.clear();renderResult('Количество порций и список покупок пересчитаны.');};
+ document.getElementById('attendance-all').onclick=()=>setAttendance({});
+ document.getElementById('attendance-weekday').onclick=()=>{
+  const data={...prefs.attendance};for(let day=0;day<Math.min(5,prefs.days);day++)data[day+'-lunch']=0;setAttendance(data);
+ };
+ if(prefs.days===7)document.getElementById('attendance-picnic').onclick=()=>{
+  const data={...prefs.attendance};for(let day=5;day<7;day++)data[day+'-lunch']='picnic';setAttendance(data);
+ };
+ $.querySelectorAll('[data-attendance]').forEach(el=>el.onchange=()=>{
+  const key=el.dataset.attendance,v=el.value;
+  if(v!=='picnic'&&!/^[0-6]$/.test(v))return;
+  const next=v==='picnic'?'picnic':Number(v);
+  if(next===prefs.people)delete prefs.attendance[key];else prefs.attendance[key]=next;
+  checkedItems.clear();renderResult('Количество порций и список покупок пересчитаны.');
+ });
  $.querySelectorAll('[data-home]').forEach(el=>el.onchange=()=>{
   if(el.checked)homeIngredients.add(el.dataset.home);else homeIngredients.delete(el.dataset.home);
   renderResult(el.checked?'Продукт уже есть дома, поэтому исключён из заявки.':'Продукт возвращён в покупки.');
