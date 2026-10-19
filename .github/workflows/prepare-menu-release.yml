@@ -1,0 +1,84 @@
+name: Prepare Palleta Menu release (PR only)
+on:
+  workflow_dispatch:
+    inputs:
+      menu_ref:
+        description: 'Source branch, tag or commit SHA from shmlr/palleta-menu'
+        required: true
+        default: 'main'
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: palleta-menu-release
+  cancel-in-progress: false
+jobs:
+  validate-and-stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout storefront
+        uses: actions/checkout@v4
+      - name: Checkout independent menu source
+        uses: actions/checkout@v4
+        with:
+          repository: shmlr/palleta-menu
+          ref: ${{ inputs.menu_ref }}
+          path: _menu_src
+          persist-credentials: false
+      - name: Resolve immutable source version
+        id: version
+        shell: bash
+        run: echo "sha=$(git -C _menu_src rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run original menu core/UI tests
+        working-directory: _menu_src
+        run: |
+          node test_core.cjs
+          node test_ui.cjs
+      - name: Run original Chromium smoke test
+        working-directory: _menu_src
+        shell: bash
+        run: |
+          npm install --no-save --ignore-scripts playwright-core@1.56.1
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/palleta-menu-smoke.log 2>&1 &
+          node e2e_smoke.cjs
+      - name: Stage only public files and preserve brand artwork
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check Pillow==11.3.0
+          python tools/prepare_menu_release.py --source _menu_src --target menu --release-sha '${{ steps.version.outputs.sha }}'
+          if grep -RIlE '79882040000|\+7 988 204 00 00' menu --include='*.html' --include='*.js' --include='*.json'; then
+            echo 'Incorrect customer phone number in release' >&2
+            exit 1
+          fi
+      - name: Remove temporary source checkout
+        shell: bash
+        run: rm -rf _menu_src
+      - name: Create human-review PR, never auto-merge
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ github.token }}
+          base: main
+          branch: automation/menu-release
+          commit-message: 'menu: stage tested public snapshot of separate menu repository'
+          title: 'Меню в /menu/: проверенный выпуск, требуется согласование'
+          body: |
+            This PR must be reviewed and merged manually. No automatic publication.
+            Source repository: shmlr/palleta-menu
+            Source ref: ${{ inputs.menu_ref }}
+            Immutable source SHA: ${{ steps.version.outputs.sha }}
+            Tests: original menu core, UI and Chromium smoke.
+            Files: allowlisted public app files, images and rounded favicons.
+            Please verify: saved menu, recipe list, PWA offline scope, 3/7 days,
+            club-price notices, phone +7 988 204 00 01 and customer flow.
+            GitHub Pages may still be deployed from a separate preview branch.
+            Switch its publishing source to main only after approval.
