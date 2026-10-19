@@ -8,3 +8,14 @@
 .card,.menu-preview{border-radius:18px}
 .hero-panel,.note,.contact-strip span{border-radius:20px}
 .preview-banner{border-radius:0}
+/* Audit: distinct useful hero panel and responsive typography */
+.hero h1{font-size:clamp(2.4rem,4.6vw,4.25rem);line-height:1.09;overflow-wrap:normal}
+.hero-panel{transform:none;box-shadow:10px 10px 0 var(--red);gap:17px;min-height:320px}
+.panel-eyebrow{color:var(--red);font-weight:900;font-size:.76rem;letter-spacing:.08em}
+.hero-panel .panel-head{font-size:clamp(1.6rem,2.8vw,2.45rem);line-height:1.12;letter-spacing:-.03em}
+.hero-panel .panel-sub{font-size:1.2rem;line-height:1.3;color:var(--blue);font-weight:800}
+.hero-panel .panel-note{letter-spacing:0;font-size:.87rem;line-height:1.4}
+.panel-link{display:inline-block;color:#fff;background:var(--red);border-radius:12px;padding:12px 15px;text-decoration:none;font-weight:800;text-align:center}
+.contact-strip a{color:#fff;text-underline-offset:3px}
+@media(max-width:850px){.hero h1{font-size:clamp(2.05rem,8vw,3.5rem)}.hero-panel{min-height:270px;box-shadow:6px 6px 0 var(--red)}}
+@media(max-width:420px){.hero h1{font-size:clamp(1.9rem,8.1vw,2.7rem)}.hero-panel .panel-head{font-size:1.9rem}.hero-panel .panel-sub{font-size:1.05rem}}
