@@ -1,0 +1,3 @@
+Source: shmlr/palleta-menu
+Commit: ff7ed89d7cd0ca89c39dd52cf55d2c0e3a74b1be
+Release requires core/UI/Chromium tests and human PR approval.

@@ -1,0 +1,935 @@
+{
+  "schema_version": 2,
+  "editorial_status": "draft_portions_not_nutrition_or_allergen_certified",
+  "source_note": "Подборка создана для пилота Паллеты с учетом функциональных принципов публичной страницы PROРЕЦЕПТЫ; полные 120 рецептов berbena.pro недоступны и не копировались. Количества на человека — рабочие редакторские оценки, подлежат кулинарной проверке.",
+  "recipes": [
+    {
+      "id": "egg_tomato",
+      "name": "Яичница с помидорами",
+      "meal": "breakfast",
+      "minutes": 12,
+      "ingredients_per_person": {
+        "eggs": 2,
+        "tomato": 0.12,
+        "oil": 0.01
+      },
+      "steps": [
+        "Нарежьте помидоры и быстро припустите на сковороде.",
+        "Разбейте яйца и приготовьте до желаемой степени готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "omelet_greens",
+      "name": "Омлет с зеленью",
+      "meal": "breakfast",
+      "minutes": 15,
+      "ingredients_per_person": {
+        "eggs": 2,
+        "milk": 0.06,
+        "greens": 0.12,
+        "oil": 0.01
+      },
+      "steps": [
+        "Взбейте яйца с молоком, добавьте зелень.",
+        "Готовьте под крышкой на слабом огне."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "dairy",
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "omelet_zucchini",
+      "name": "Омлет с кабачками",
+      "meal": "breakfast",
+      "minutes": 20,
+      "ingredients_per_person": {
+        "eggs": 2,
+        "zucchini": 0.14,
+        "milk": 0.03,
+        "oil": 0.01
+      },
+      "steps": [
+        "Натрите кабачок и слегка обжарьте.",
+        "Добавьте яйца с молоком, готовьте под крышкой."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "dairy",
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "syrniki",
+      "name": "Сырники",
+      "meal": "breakfast",
+      "minutes": 25,
+      "ingredients_per_person": {
+        "cottage": 0.16,
+        "eggs": 0.5,
+        "flour": 0.035,
+        "oil": 0.01
+      },
+      "steps": [
+        "Разомните творог с яйцом и небольшим количеством муки.",
+        "Сформируйте сырники, обжарьте с двух сторон до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "gluten",
+        "dairy",
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "rice_porridge",
+      "name": "Рисовая каша на молоке",
+      "meal": "breakfast",
+      "minutes": 30,
+      "ingredients_per_person": {
+        "rice": 0.065,
+        "milk": 0.27
+      },
+      "steps": [
+        "Промойте рис и сварите в воде до полуготовности.",
+        "Добавьте молоко и доведите до мягкости, помешивая."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "dairy"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "pumpkin_rice",
+      "name": "Рисовая каша с тыквой",
+      "meal": "breakfast",
+      "minutes": 30,
+      "ingredients_per_person": {
+        "rice": 0.06,
+        "pumpkin": 0.14,
+        "milk": 0.2
+      },
+      "steps": [
+        "Нарежьте тыкву и потушите с небольшим количеством воды.",
+        "Добавьте рис, затем молоко, варите до мягкости."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "dairy"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "pancakes",
+      "name": "Блины на молоке",
+      "meal": "breakfast",
+      "minutes": 30,
+      "ingredients_per_person": {
+        "flour": 0.09,
+        "milk": 0.22,
+        "eggs": 0.5,
+        "oil": 0.015
+      },
+      "steps": [
+        "Смешайте молоко, яйца и муку в гладкое тесто.",
+        "Выпекайте тонкие блины на разогретой сковороде."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "gluten",
+        "dairy",
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "zucchini_fritters",
+      "name": "Кабачковые оладьи",
+      "meal": "breakfast",
+      "minutes": 25,
+      "ingredients_per_person": {
+        "zucchini": 0.23,
+        "eggs": 0.5,
+        "flour": 0.04,
+        "oil": 0.015
+      },
+      "steps": [
+        "Натрите кабачок и слегка отожмите влагу.",
+        "Смешайте с яйцом и мукой, обжарьте порциями."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "gluten",
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "potato_omelet",
+      "name": "Картофельный омлет",
+      "meal": "breakfast",
+      "minutes": 25,
+      "ingredients_per_person": {
+        "potato": 0.18,
+        "eggs": 2,
+        "onion": 0.035,
+        "oil": 0.015
+      },
+      "steps": [
+        "Картофель нарежьте мелко и доведите до мягкости на сковороде.",
+        "Добавьте лук и взбитые яйца, готовьте под крышкой."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "cottage_bowl",
+      "name": "Творог с тёплой тыквой",
+      "meal": "breakfast",
+      "minutes": 20,
+      "ingredients_per_person": {
+        "cottage": 0.18,
+        "pumpkin": 0.16
+      },
+      "steps": [
+        "Потушите небольшие кубики тыквы до мягкости.",
+        "Подавайте тёплую тыкву с творогом."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "dairy"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "egg_potato",
+      "name": "Яйца с отварным картофелем",
+      "meal": "breakfast",
+      "minutes": 25,
+      "ingredients_per_person": {
+        "eggs": 2,
+        "potato": 0.2,
+        "greens": 0.07
+      },
+      "steps": [
+        "Отварите картофель и яйца.",
+        "Нарежьте, посыпьте зеленью и подавайте."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "pumpkin_flatbread",
+      "name": "Лепёшки с тыквой",
+      "meal": "breakfast",
+      "minutes": 40,
+      "ingredients_per_person": {
+        "flour": 0.11,
+        "pumpkin": 0.19,
+        "onion": 0.025,
+        "oil": 0.015
+      },
+      "steps": [
+        "Замесите тесто из муки и воды, отдельно потушите тыкву с луком.",
+        "Сделайте тонкие лепёшки с начинкой и обжарьте на сухой сковороде."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "gluten"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "lentil_soup",
+      "name": "Чечевичный суп",
+      "meal": "lunch",
+      "minutes": 40,
+      "ingredients_per_person": {
+        "lentil": 0.075,
+        "carrot": 0.055,
+        "onion": 0.045,
+        "potato": 0.1,
+        "oil": 0.01
+      },
+      "steps": [
+        "Обжарьте лук и морковь, добавьте картофель и чечевицу.",
+        "Залейте водой, варите до мягкости."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "chicken_soup",
+      "name": "Куриный суп с лапшой",
+      "meal": "lunch",
+      "minutes": 45,
+      "ingredients_per_person": {
+        "chicken": 0.16,
+        "noodles": 0.05,
+        "potato": 0.1,
+        "carrot": 0.05,
+        "onion": 0.04
+      },
+      "steps": [
+        "Отварите курицу с луком до готовности.",
+        "Добавьте овощи и лапшу, доведите до мягкости."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "gluten"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "chicken_rice_soup",
+      "name": "Куриный суп с рисом",
+      "meal": "lunch",
+      "minutes": 45,
+      "ingredients_per_person": {
+        "chicken": 0.16,
+        "rice": 0.045,
+        "potato": 0.095,
+        "carrot": 0.04,
+        "onion": 0.04
+      },
+      "steps": [
+        "Сварите бульон на курице.",
+        "Добавьте рис и овощи, варите до полной готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "meatball_soup",
+      "name": "Суп с фрикадельками",
+      "meal": "lunch",
+      "minutes": 40,
+      "ingredients_per_person": {
+        "mince": 0.14,
+        "potato": 0.12,
+        "carrot": 0.05,
+        "onion": 0.04,
+        "rice": 0.025
+      },
+      "steps": [
+        "Сформируйте небольшие фрикадельки из фарша.",
+        "Опустите в кипящую воду с овощами и рисом, сварите до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "vegetable_soup",
+      "name": "Овощной суп",
+      "meal": "lunch",
+      "minutes": 35,
+      "ingredients_per_person": {
+        "potato": 0.16,
+        "carrot": 0.065,
+        "onion": 0.055,
+        "zucchini": 0.1,
+        "tomato": 0.09,
+        "oil": 0.01
+      },
+      "steps": [
+        "Нарежьте овощи и поэтапно добавляйте в кипящую воду.",
+        "Варите до мягкости, при необходимости слегка разомните."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "fish_soup",
+      "name": "Рыбный суп с овощами",
+      "meal": "lunch",
+      "minutes": 40,
+      "ingredients_per_person": {
+        "fish": 0.16,
+        "potato": 0.16,
+        "carrot": 0.055,
+        "onion": 0.05,
+        "greens": 0.08
+      },
+      "steps": [
+        "Сварите нарезанные овощи в воде.",
+        "Добавьте рыбу и доведите до полной готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "fish"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "pumpkin_soup",
+      "name": "Суп-пюре из тыквы",
+      "meal": "lunch",
+      "minutes": 35,
+      "ingredients_per_person": {
+        "pumpkin": 0.25,
+        "potato": 0.11,
+        "onion": 0.05,
+        "carrot": 0.045,
+        "oil": 0.01
+      },
+      "steps": [
+        "Потушите овощи в небольшом количестве воды до мягкости.",
+        "Измельчите до пюре, добавьте воду до нужной густоты."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "chicken_potato_stew",
+      "name": "Курица с картофелем на обед",
+      "meal": "lunch",
+      "minutes": 45,
+      "ingredients_per_person": {
+        "chicken": 0.18,
+        "potato": 0.19,
+        "carrot": 0.06,
+        "onion": 0.06,
+        "tomato": 0.08
+      },
+      "steps": [
+        "Слегка обжарьте курицу с луком.",
+        "Добавьте овощи и воду, тушите до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "rice_vegetables",
+      "name": "Рис с овощами",
+      "meal": "lunch",
+      "minutes": 35,
+      "ingredients_per_person": {
+        "rice": 0.095,
+        "carrot": 0.07,
+        "onion": 0.055,
+        "pepper": 0.09,
+        "tomato": 0.07,
+        "oil": 0.015
+      },
+      "steps": [
+        "Отварите рис.",
+        "Припустите нарезанные овощи и соедините с рисом."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "lentil_vegetables",
+      "name": "Чечевица с овощами",
+      "meal": "lunch",
+      "minutes": 35,
+      "ingredients_per_person": {
+        "lentil": 0.105,
+        "carrot": 0.065,
+        "onion": 0.06,
+        "tomato": 0.085,
+        "oil": 0.012
+      },
+      "steps": [
+        "Отварите чечевицу до мягкости.",
+        "Потушите овощи и смешайте с чечевицей."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "mince_rice",
+      "name": "Говяжий фарш с рисом",
+      "meal": "lunch",
+      "minutes": 40,
+      "ingredients_per_person": {
+        "mince": 0.16,
+        "rice": 0.095,
+        "onion": 0.06,
+        "carrot": 0.07,
+        "tomato": 0.1
+      },
+      "steps": [
+        "Отварите рис.",
+        "Прожарьте фарш с овощами до готовности, соедините с рисом."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "tomato_egg_soup",
+      "name": "Томатный суп с яйцом",
+      "meal": "lunch",
+      "minutes": 30,
+      "ingredients_per_person": {
+        "tomato": 0.22,
+        "eggs": 1,
+        "onion": 0.045,
+        "potato": 0.1,
+        "oil": 0.01
+      },
+      "steps": [
+        "Сварите картофель и припущенные помидоры с луком.",
+        "Влейте размешанное яйцо в кипящий суп, тщательно прогрейте."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "vegetable_noodles",
+      "name": "Лапша с овощами",
+      "meal": "lunch",
+      "minutes": 30,
+      "ingredients_per_person": {
+        "noodles": 0.095,
+        "tomato": 0.1,
+        "carrot": 0.08,
+        "onion": 0.05,
+        "oil": 0.015
+      },
+      "steps": [
+        "Отварите лапшу до готовности.",
+        "Протушите нарезанные овощи, смешайте с лапшой."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "gluten"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "chicken_lentil",
+      "name": "Курица с чечевицей",
+      "meal": "lunch",
+      "minutes": 50,
+      "ingredients_per_person": {
+        "chicken": 0.17,
+        "lentil": 0.075,
+        "onion": 0.055,
+        "carrot": 0.055,
+        "tomato": 0.075
+      },
+      "steps": [
+        "Потушите кусочки курицы с луком.",
+        "Добавьте чечевицу, морковь и воду, доведите до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "hinkal",
+      "name": "Хинкал с курицей",
+      "meal": "dinner",
+      "minutes": 60,
+      "ingredients_per_person": {
+        "chicken": 0.22,
+        "flour": 0.115,
+        "onion": 0.05,
+        "greens": 0.1
+      },
+      "steps": [
+        "Отварите курицу до полной готовности, сохраните бульон.",
+        "Замесите и раскатайте тесто из муки и воды, нарежьте.",
+        "Отварите кусочки теста и подавайте с курицей и бульоном."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "gluten"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "pilaf",
+      "name": "Плов с курицей",
+      "meal": "dinner",
+      "minutes": 60,
+      "ingredients_per_person": {
+        "rice": 0.11,
+        "chicken": 0.21,
+        "carrot": 0.085,
+        "onion": 0.065,
+        "oil": 0.02
+      },
+      "steps": [
+        "Обжарьте курицу с луком и морковью.",
+        "Добавьте рис, воду и готовьте до рассыпчатости."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "pumpkin_chudu",
+      "name": "Чуду с тыквой",
+      "meal": "dinner",
+      "minutes": 50,
+      "ingredients_per_person": {
+        "flour": 0.13,
+        "pumpkin": 0.22,
+        "onion": 0.045,
+        "oil": 0.02,
+        "eggs": 0.5
+      },
+      "steps": [
+        "Замесите тесто из муки, воды и части яйца.",
+        "Потушите тыкву с луком, выложите начинку.",
+        "Запеките или обжарьте тонкие чуду до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "gluten",
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "baked_fish",
+      "name": "Белая рыба с овощами",
+      "meal": "dinner",
+      "minutes": 40,
+      "ingredients_per_person": {
+        "fish": 0.23,
+        "potato": 0.2,
+        "tomato": 0.12,
+        "onion": 0.04,
+        "oil": 0.012
+      },
+      "steps": [
+        "Нарежьте картофель тонко и предварительно запеките.",
+        "Добавьте рыбу, помидоры и лук, доведите до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "fish"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "stuffed_pepper",
+      "name": "Фаршированный перец",
+      "meal": "dinner",
+      "minutes": 60,
+      "ingredients_per_person": {
+        "pepper": 0.28,
+        "mince": 0.14,
+        "rice": 0.04,
+        "onion": 0.055,
+        "tomato": 0.11
+      },
+      "steps": [
+        "Смешайте фарш с промытым рисом и луком.",
+        "Наполните очищенные перцы, добавьте помидоры и немного воды.",
+        "Тушите до готовности фарша и риса."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "chicken_zucchini",
+      "name": "Рагу из курицы и кабачков",
+      "meal": "dinner",
+      "minutes": 40,
+      "ingredients_per_person": {
+        "chicken": 0.19,
+        "zucchini": 0.17,
+        "potato": 0.16,
+        "tomato": 0.11,
+        "pepper": 0.07,
+        "onion": 0.05
+      },
+      "steps": [
+        "Курицу обжарьте с луком.",
+        "Добавьте овощи и тушите до полной готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "meatballs",
+      "name": "Котлеты с рисом и томатами",
+      "meal": "dinner",
+      "minutes": 45,
+      "ingredients_per_person": {
+        "mince": 0.18,
+        "rice": 0.095,
+        "onion": 0.055,
+        "tomato": 0.11,
+        "oil": 0.01
+      },
+      "steps": [
+        "Сформируйте котлеты из фарша и лука, приготовьте до готовности.",
+        "Рис отварите, томаты слегка потушите и подайте вместе."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "chicken_potatoes",
+      "name": "Запечённая курица с картофелем",
+      "meal": "dinner",
+      "minutes": 55,
+      "ingredients_per_person": {
+        "chicken": 0.24,
+        "potato": 0.25,
+        "onion": 0.06,
+        "oil": 0.015
+      },
+      "steps": [
+        "Нарежьте курицу и картофель, перемешайте с луком.",
+        "Запекайте до готовности курицы и мягкости картофеля."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "mince_zucchini",
+      "name": "Кабачки с говяжьим фаршем",
+      "meal": "dinner",
+      "minutes": 45,
+      "ingredients_per_person": {
+        "zucchini": 0.22,
+        "mince": 0.18,
+        "tomato": 0.12,
+        "onion": 0.055,
+        "oil": 0.015
+      },
+      "steps": [
+        "Приготовьте фарш с луком до изменения цвета.",
+        "Добавьте кабачки и помидоры, тушите до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "fish_rice",
+      "name": "Белая рыба с рисом",
+      "meal": "dinner",
+      "minutes": 40,
+      "ingredients_per_person": {
+        "fish": 0.22,
+        "rice": 0.1,
+        "carrot": 0.055,
+        "onion": 0.05,
+        "oil": 0.013
+      },
+      "steps": [
+        "Отварите рис.",
+        "Рыбу приготовьте с морковью и луком до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "fish"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "vegetable_bake",
+      "name": "Овощная запеканка с яйцом",
+      "meal": "dinner",
+      "minutes": 50,
+      "ingredients_per_person": {
+        "potato": 0.18,
+        "zucchini": 0.2,
+        "tomato": 0.11,
+        "eggs": 1.5,
+        "milk": 0.055,
+        "oil": 0.012
+      },
+      "steps": [
+        "Нарежьте овощи, разложите в форме.",
+        "Залейте взбитыми яйцами с молоком, запеките до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "dairy",
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "chicken_pepper",
+      "name": "Курица с перцем и помидорами",
+      "meal": "dinner",
+      "minutes": 35,
+      "ingredients_per_person": {
+        "chicken": 0.22,
+        "pepper": 0.15,
+        "tomato": 0.13,
+        "onion": 0.06,
+        "oil": 0.014
+      },
+      "steps": [
+        "Курицу приготовьте на сковороде с луком.",
+        "Добавьте перец и помидоры, тушите до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "pumpkin_rice_dinner",
+      "name": "Рис с тыквой и курицей",
+      "meal": "dinner",
+      "minutes": 50,
+      "ingredients_per_person": {
+        "chicken": 0.19,
+        "rice": 0.095,
+        "pumpkin": 0.18,
+        "onion": 0.06,
+        "oil": 0.012
+      },
+      "steps": [
+        "Обжарьте курицу и лук.",
+        "Добавьте рис, кубики тыквы и воду, тушите до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "fish_potato_pan",
+      "name": "Рыба с картофелем в сотейнике",
+      "meal": "dinner",
+      "minutes": 45,
+      "ingredients_per_person": {
+        "fish": 0.21,
+        "potato": 0.23,
+        "onion": 0.045,
+        "carrot": 0.07,
+        "tomato": 0.095
+      },
+      "steps": [
+        "Картофель и морковь потушите до полуготовности.",
+        "Добавьте рыбу, томаты и лук, готовьте под крышкой."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "fish"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "vegetable_rice_dinner",
+      "name": "Овощной рис с яйцом",
+      "meal": "dinner",
+      "minutes": 35,
+      "ingredients_per_person": {
+        "rice": 0.11,
+        "eggs": 1.5,
+        "pepper": 0.09,
+        "carrot": 0.07,
+        "oil": 0.014
+      },
+      "steps": [
+        "Сварите рис и отдельно припустите овощи.",
+        "Соедините с рисом, добавьте яйца и прогрейте до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "lentil_cutlets",
+      "name": "Чечевичные котлетки",
+      "meal": "dinner",
+      "minutes": 45,
+      "ingredients_per_person": {
+        "lentil": 0.12,
+        "eggs": 0.5,
+        "flour": 0.04,
+        "onion": 0.05,
+        "carrot": 0.055,
+        "oil": 0.015
+      },
+      "steps": [
+        "Сварите чечевицу, слейте воду и разомните.",
+        "Добавьте натёртые овощи, яйцо и муку.",
+        "Сформируйте котлетки и приготовьте до готовности."
+      ],
+      "pantry_note": "Вода, соль и специи по вкусу не включены в корзину.",
+      "tags": [
+        "gluten",
+        "eggs"
+      ],
+      "source": "editorial_pilot_not_verified_berbena"
+    },
+    {
+      "id": "chicken_offal_soup",
+      "name": "Суп с куриными потрохами",
+      "meal": "lunch",
+      "minutes": 90,
+      "ingredients_per_person": {
+        "offal": 0.16,
+        "potato": 0.15,
+        "carrot": 0.06,
+        "onion": 0.055,
+        "greens": 0.05
+      },
+      "steps": [
+        "Промойте потроха, удалите несъедобные части. Сердечки и желудки отдельно отварите до мягкости; печень, если она есть в наборе, добавляйте ближе к концу.",
+        "Добавьте картофель, морковь и лук; варите до готовности овощей.",
+        "Убедитесь, что все субпродукты полностью приготовлены (не менее 74 °C в центре продукта). Добавьте зелень при подаче."
+      ],
+      "pantry_note": "Время зависит от состава потрохов; 90 минут — ориентир. При необходимости готовьте дольше. Соль, вода и специи отдельно.",
+      "tags": [],
+      "source": "editorial_pilot_not_culinary_verified"
+    },
+    {
+      "id": "chicken_offal_stew",
+      "name": "Тушёные куриные потроха с картофелем",
+      "meal": "dinner",
+      "minutes": 90,
+      "ingredients_per_person": {
+        "offal": 0.19,
+        "potato": 0.23,
+        "onion": 0.07,
+        "carrot": 0.08,
+        "oil": 0.015
+      },
+      "steps": [
+        "Подготовьте и промойте потроха; сердечки и желудки тушите с водой до мягкости.",
+        "Добавьте картофель, лук и морковь и тушите до готовности овощей. Печень, если входит в смесь, добавьте позже, чтобы не пересушить.",
+        "Доведите все субпродукты до полной готовности (не менее 74 °C в центре продукта)."
+      ],
+      "pantry_note": "Для смешанных потрохов время зависит от состава и размера кусочков. Не используйте время приготовления филе как ориентир.",
+      "tags": [],
+      "source": "editorial_pilot_not_culinary_verified"
+    }
+  ]
+}
