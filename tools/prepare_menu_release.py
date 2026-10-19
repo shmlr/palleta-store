@@ -73,7 +73,8 @@ def main():
             "line-height:44px;font-size:14px;font-weight:700;"
             "color:#254A74;text-underline-offset:3px}"
             ".store-return-link:focus-visible{outline:3px solid #DD463C;"
-            "outline-offset:3px}</style>",
+            "outline-offset:3px}"
+            "/* palleta: approved gentle rounding */:root{--radius-sm:10px;--radius-md:14px;--radius-lg:16px}.panel,.home-hero{border-radius:var(--radius-lg)}.choice,.btn,.wa-link,.home-stats>div,.cross-brand,.product select{border-radius:var(--radius-sm)}.note,.pill,.light-btn{border-radius:var(--radius-sm)}</style>",
             1,
         )
         (dest / name).write_text(page, encoding="utf-8")
