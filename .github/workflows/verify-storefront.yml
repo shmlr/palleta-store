@@ -1,0 +1,35 @@
+name: Verify approved Palleta storefront
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'styles.css'
+      - 'assets/approved-grocery-cover.webp'
+      - 'tools/test_storefront.cjs'
+      - '.github/workflows/verify-storefront.yml'
+permissions:
+  contents: read
+jobs:
+  verify-storefront:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser driver
+        run: npm install --no-save --ignore-scripts playwright-core@1.56.1
+      - name: Run real Chrome tests for approved cover
+        run: |
+          python3 -m http.server 8877 --bind 127.0.0.1 >/tmp/palleta-home-test.log 2>&1 &
+          node tools/test_storefront.cjs
+      - name: Save mobile and desktop preview screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: approved-palleta-cover-preview
+          path: /tmp/palleta-home-*.png
+          retention-days: 7
+          if-no-files-found: warn
