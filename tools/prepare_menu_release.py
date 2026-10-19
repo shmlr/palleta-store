@@ -55,6 +55,10 @@ def main():
             raise SystemExit(f"Could not locate menu header/styles in {name}")
         page = page.replace("Для большой семейной закупки ·", "Дискаунтер ·")
         page = page.replace(
+            "Автоматическая выгрузка УТ 11 ещё не подключена; наличие и цену подтверждает магазин.",
+            "Справочные клубные цены проходят проверку по датированным отчётам 1С. Актуальные цены и наличие подтверждает магазин.",
+        )
+        page = page.replace(
             "</header>",
             '</header><nav class="store-return-nav" aria-label="На главный сайт">'
             '<a class="store-return-link" href="../">← На сайт Паллеты</a></nav>',
