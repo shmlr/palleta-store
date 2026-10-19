@@ -14,6 +14,12 @@ let view='home',hasSavedPlan=false;
 let checkedItems=new Set(),homeIngredients=new Set();
 const STORE_KEY='palleta-menu-v1';
 const WHATSAPP_NUMBER='79882040001';
+// Attribution only: no recipe identity or paid entitlement is inferred from these parameters.
+const BERBENA_RECIPES='https://berbena.pro/prorecepty';
+function berbenaHref(content='general'){
+ const token=/^[a-z0-9_-]{1,80}$/i.test(content)?content:'general';
+ return BERBENA_RECIPES+'?utm_source=palleta_menu&utm_medium=referral&utm_campaign=recipes_to_berbena&utm_content='+encodeURIComponent(token);
+}
 function saveState(){
  try{if(!window.localStorage)return;window.localStorage.setItem(STORE_KEY,JSON.stringify({version:2,step,seed,prefs,fixed,chosen,checked:[...checkedItems],home:[...homeIngredients]}));}catch(e){}
 }
@@ -84,7 +90,7 @@ function renderQuestion(){
  if(step)document.getElementById('back').onclick=()=>{step--;render()};
  document.getElementById('home-from-questions').onclick=showHome;
 }
-function renderRecipeDetails(r){return `<details><summary class="small">Как готовить и состав на порцию</summary><p class="small">${Object.entries(r.ingredients_per_person).map(([id,v])=>`${esc(catalog.byIngredient[id].name)} ${qfmt(v)} ${esc(catalog.byIngredient[id].unit)}`).join(' · ')}</p><ol>${r.steps.map(t=>`<li class="small">${esc(t)}</li>`).join('')}</ol><p class="small">${esc(r.pantry_note)}</p></details>`;}
+function renderRecipeDetails(r){return `<details><summary class="small">Как готовить и состав на порцию</summary><p class="small">${Object.entries(r.ingredients_per_person).map(([id,v])=>`${esc(catalog.byIngredient[id].name)} ${qfmt(v)} ${esc(catalog.byIngredient[id].unit)}`).join(' · ')}</p><ol>${r.steps.map(t=>`<li class="small">${esc(t)}</li>`).join('')}</ol><p class="small">${esc(r.pantry_note)}</p><p class="small"><a class="link" target="_blank" rel="noopener noreferrer" href="${esc(berbenaHref('recipe_'+r.id))}">Другие рецепты на berbena.pro ↗</a></p></details>`;}
 function alternativesFor(slot){
  const recipesForMeal=recipes.filter(r=>r.meal===slot.meal&&r.minutes<=prefs.time&&!r.tags.some(t=>prefs.excl.includes(t)));
  // Availability across the entire selected week's cart is checked by the planner when a user chooses an alternative.
@@ -203,6 +209,7 @@ function renderResult(message=''){
  h+='<p class="small">Идеи завтраков из публичного демо berbena.pro, ещё не сопоставленные с ассортиментом: овсяные хлопья, бананы, семена чиа, кокосовое молоко. Они не включены в заказ.</p></div>';
  h+='<button class="btn" id="copy">Скопировать меню и список продуктов</button><button class="btn secondary" id="share">Поделиться списком</button><button class="btn secondary" id="print">Распечатать или сохранить PDF</button><button class="btn secondary" id="clearchecks">Снять отметки с покупок</button><button class="btn secondary" id="shuffle">Другое сочетание блюд</button><button class="btn secondary" id="restart">Изменить условия</button>';
  h+='<div class="panel wa-section"><h2>Готово! Отправьте заявку в Паллету</h2><p class="small">В заявке только товары магазина, без мяса из домашних запасов. Магазин уточнит клубные цены, наличие и возможные замены.</p><a class="btn wa-link" id="whatsapp" href="'+esc(whatsappHref(lastPlan))+'" target="_blank" rel="noopener noreferrer">Отправить список в WhatsApp ↗</a><p class="small">Получатель: +7 988 204-00-01. WhatsApp откроет готовое сообщение: проверьте его и нажмите «Отправить». Без подтверждения магазина заказ ещё не оформлен.</p></div>';
+h+='<section class="panel" id="berbena-recipes-referral"><h2>Ещё идеи для семейного меню</h2><p>В PROРЕЦЕПТАХ на berbena.pro — отдельная библиотека из 120 рецептов, план дня и настройка порций. Доступ 590 ₽, без подписки.</p><a class="btn secondary" href="'+esc(berbenaHref('menu_result'))+'" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none">Посмотреть PROРЕЦЕПТЫ на berbena.pro ↗</a><p class="small">Это другая библиотека. Ссылка не гарантирует наличие выбранного блюда на berbena.pro.</p></section>';
 if(prefs.time<90)h+='<p class="small">Для блюд из куриных потрохов выберите «Без ограничения» по времени: им требуется больше времени, чем куриному филе.</p>';
 h+='<p class="muted">* Соль, вода и специи для многих рецептов не включены в продуктовую корзину; порции носят редакционный характер. Аллергенная безопасность не проверена, фильтры не заменяют изучение состава товара.</p>';
  $.innerHTML=h;
