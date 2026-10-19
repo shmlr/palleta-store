@@ -54,7 +54,7 @@ jobs:
       - name: Stage only public files and preserve brand artwork
         shell: bash
         run: |
-          python -m pip install --disable-pip-version-check Pillow==11.3.0
+          python -m pip install --disable-pip-version-check Pillow==11.3.0 CairoSVG==2.8.2
           python tools/prepare_menu_release.py --source _menu_src --target menu --release-sha '${{ steps.version.outputs.sha }}'
           if grep -RIlE '79882040000|\+7 988 204 00 00' menu --include='*.html' --include='*.js' --include='*.json'; then
             echo 'Incorrect customer phone number in release' >&2
