@@ -68,7 +68,7 @@ jobs:
         with:
           token: ${{ github.token }}
           base: main
-          branch: automation/menu-release
+          branch: automation/menu-candidate
           commit-message: 'menu: stage tested public snapshot of separate menu repository'
           title: 'Меню в /menu/: проверенный выпуск, требуется согласование'
           body: |
