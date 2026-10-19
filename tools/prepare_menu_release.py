@@ -53,6 +53,7 @@ def main():
         page = (dest / name).read_text(encoding="utf-8")
         if "</header>" not in page or "</style>" not in page:
             raise SystemExit(f"Could not locate menu header/styles in {name}")
+        page = page.replace("Для большой семейной закупки ·", "Дискаунтер ·")
         page = page.replace(
             "</header>",
             '</header><nav class="store-return-nav" aria-label="На главный сайт">'
@@ -97,6 +98,7 @@ def main():
     # Add favicon references together with the icon in one atomic pull request.
     store_index = dest.parent / "index.html"
     html = store_index.read_text(encoding="utf-8")
+    html = html.replace("https://shmlr.github.io/palleta-menu/start.html", "menu/start.html")
     if "assets/palleta-favicon-32.png" not in html:
         anchor = '<link rel="stylesheet"'
         if anchor not in html:
@@ -109,6 +111,7 @@ def main():
             'sizes="192x192">' + anchor, 1,
         )
         store_index.write_text(html, encoding="utf-8")
+    store_index.write_text(html, encoding="utf-8")
     (dest / "RELEASE.txt").write_text(
         "Source: shmlr/palleta-menu\nCommit: " + args.release_sha + "\n"
         "Release requires core/UI/Chromium tests and human PR approval.\n",
