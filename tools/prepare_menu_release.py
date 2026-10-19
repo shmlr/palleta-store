@@ -4,8 +4,8 @@
 No 1C exports, secrets, .github workflows, CI logs, or unapproved files.
 """
 import argparse
-import base64
-from io import BytesIO
+import io
+import cairosvg
 import re
 import shutil
 from pathlib import Path
@@ -18,15 +18,23 @@ PUBLIC_FILES = (
 )
 IMAGE_EXTS = {".png", ".webp", ".jpg", ".jpeg", ".svg", ".ico"}
 
-def rounded(src, dest, pixels):
-    img = Image.open(src).convert("RGBA").resize((pixels, pixels), Image.Resampling.LANCZOS)
-    mask = Image.new("L", (pixels, pixels), 0)
+def original_icon(vector_path, size):
+    """Render exact paths from approved .ai; modify only the outer white canvas."""
+    svg = vector_path.read_bytes()
+    scale = 4 if size < 128 else 2
+    canvas = size * scale
+    padding = round(canvas * 0.10)
+    art = Image.open(io.BytesIO(cairosvg.svg2png(
+        bytestring=svg, output_width=canvas - 2 * padding
+    ))).convert("RGBA")
+    img = Image.new("RGBA", (canvas, canvas), "#ffffff")
+    img.alpha_composite(art, (padding, (canvas - art.height) // 2))
+    mask = Image.new("L", img.size)
     ImageDraw.Draw(mask).rounded_rectangle(
-        (0, 0, pixels - 1, pixels - 1), radius=max(2, round(pixels * .11)), fill=255
+        (0, 0, canvas - 1, canvas - 1), radius=round(canvas * 0.105), fill=255
     )
     img.putalpha(ImageChops.multiply(img.getchannel("A"), mask))
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest, optimize=True)
+    return img.resize((size, size), Image.Resampling.LANCZOS)
 
 def main():
     ap = argparse.ArgumentParser()
@@ -84,35 +92,47 @@ def main():
             txt = item.read_text(encoding="utf-8")
             if "79882040000" in txt or "+7 988 204 00 00" in txt:
                 raise SystemExit(f"Wrong customer phone number: {item}")
-    # Clip only the corners of the approved original icons, no brand redraw.
-    icon = dest / "assets" / "app-icon-512.png"
-    if not icon.is_file():
-        raise SystemExit("Approved icon missing from menu assets")
-    for size in (192, 512):
-        rounded(icon, dest / "assets" / f"app-icon-{size}.png", size)
-    # This 32px favicon was derived from the owner's palleta-round-original.png.
-    # Never synthesize it from the independent application's PWA app icon.
-    approved_path = dest.parent / "assets" / "palleta-approved-favicon-32.b64"
-    if not approved_path.is_file():
-        raise SystemExit("Original approved Palleta favicon source is missing")
-    approved_bytes = base64.b64decode(approved_path.read_text().strip(), validate=True)
-    approved_icon = Image.open(BytesIO(approved_bytes)).convert("RGBA")
-    if approved_icon.size != (32, 32):
-        raise SystemExit("Approved favicon must be a 32x32 PNG")
-    for output in (dest / "assets" / "palleta-favicon-32.png",
-                   dest.parent / "assets" / "palleta-favicon-32.png"):
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_bytes(approved_bytes)
-    rounded(icon, dest.parent / "assets" / "palleta-icon-192.png", 192)
-    original = Image.open(icon).convert("RGBA")
-    mask = Image.new("L", original.size, 0)
-    ImageDraw.Draw(mask).rounded_rectangle(
-        (0, 0, original.width - 1, original.height - 1),
-        radius=int(original.width * .11), fill=255,
+    # Symbol is the percentage sign on a pallet, extracted from the brandbook AI.
+    # The artwork's path geometry is immutable; only the outer white square is rounded.
+    source_vector = dest.parent / "assets" / "palleta-original-symbol.svg"
+    if not source_vector.is_file():
+        raise SystemExit("Approved brandbook vector SVG missing")
+    (dest / "assets" / "palleta-original-symbol.svg").write_bytes(
+        source_vector.read_bytes()
     )
-    original.putalpha(ImageChops.multiply(original.getchannel("A"), mask))
-    for dst in (dest / "favicon.ico", dest.parent / "favicon.ico"):
-        approved_icon.save(dst, format="ICO", sizes=[(16, 16), (32, 32)])
+    for size in (192, 512):
+        original_icon(source_vector, size).save(
+            dest / "assets" / f"app-icon-{size}.png", optimize=True
+        )
+    for output, size in (
+        (dest / "assets" / "palleta-favicon-32.png", 32),
+        (dest.parent / "assets" / "palleta-favicon-32.png", 32),
+        (dest.parent / "assets" / "palleta-icon-192.png", 192),
+    ):
+        original_icon(source_vector, size).save(output, optimize=True)
+    ico = original_icon(source_vector, 256)
+    for output in (dest / "favicon.ico", dest.parent / "favicon.ico"):
+        ico.save(output, format="ICO", sizes=[(16, 16), (32, 32), (48, 48), (64, 64)])
+    # Refresh web app icons on installed phones and evict legacy PWA caches.
+    manifest = dest / "manifest.webmanifest"
+    manifest.write_text(
+        manifest.read_text(encoding="utf-8").replace("20261014-final", "20261019-vector-brand"),
+        encoding="utf-8",
+    )
+    worker = dest / "sw.js"
+    worker.write_text(
+        worker.read_text(encoding="utf-8").replace(
+            "palleta-offline-v1-20261014-pantry-3day",
+            "palleta-offline-v2-20261019-vector-brand",
+        ), encoding="utf-8",
+    )
+    for name in ("index.html", "start.html"):
+        page_file = dest / name
+        page_file.write_text(
+            page_file.read_text(encoding="utf-8").replace(
+                "20261014-final", "20261019-vector-brand"
+            ), encoding="utf-8",
+        )
     # Add favicon references together with the icon in one atomic pull request.
     store_index = dest.parent / "index.html"
     html = store_index.read_text(encoding="utf-8")
