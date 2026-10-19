@@ -83,30 +83,46 @@ function basket(needs,c,selected={},now=Date.now(),homeIngredients=[]){
   confirmedTotal:allCurrent&&allStock&&allPriced?items.reduce((s,x)=>s+x.cost,0):null};
 }
 function aggregate(menu,people){let need={};for(const r of menu)if(r){for(const [id,q]of Object.entries(r.ingredients_per_person))need[id]=(need[id]||0)+q*people;}return need;}
+function peopleForSlot(preferences,key){
+ const people=Number.isSafeInteger(preferences.people)&&preferences.people>=1&&preferences.people<=6?preferences.people:1;
+ const attendance=preferences.attendance;
+ const custom=attendance&&typeof attendance==='object'&&!Array.isArray(attendance)&&Object.prototype.hasOwnProperty.call(attendance,key)?attendance[key]:undefined;
+ return custom==='picnic'?0:Number.isInteger(custom)&&custom>=0&&custom<=people?custom:people;
+}
+function weightedNeeds(picked){
+ const need={};
+ for(const item of picked)if(item.recipe&&item.people>0){
+  for(const [id,q]of Object.entries(item.recipe.ingredients_per_person))need[id]=(need[id]||0)+q*item.people;
+ }
+ return need;
+}
 function hash(s){let x=2166136261;for(let i=0;i<s.length;i++){x^=s.charCodeAt(i);x=Math.imul(x,16777619);}return (x>>>0)/4294967296;}
 function plan(c,recipes,preferences,opts={}){
  const now=opts.now??Date.now();const fixed=opts.fixed||{},seed=opts.seed||1;
- const meals=opts.meals||MEALS,slots=[],picked=[],use={},people=preferences.people||1;
+ const meals=opts.meals||MEALS,slots=[],picked=[],use={};
  const days=preferences.days===3?3:7;
  for(let day=0;day<days;day++)for(const meal of meals){
-  const key=day+'-'+meal;
-  const slot={key,day,meal,recipe:null,reason:''};
+  const key=day+'-'+meal,people=peopleForSlot(preferences,key);
+  const slot={key,day,meal,people,mode:preferences.attendance?.[key]==='picnic'?'picnic':'home',recipe:null,reason:''};
+  if(people===0){slot.reason=slot.mode==='picnic'?'Пикник: продукты рассчитайте отдельно':'Дома никто не ест';slots.push(slot);continue;}
   const eligible=recipes.filter(r=>r.meal===meal&&r.minutes<=(preferences.time||999)&&!r.tags.some(t=>(preferences.excl||[]).includes(t)));
   if(!eligible.length){slot.reason='Нет рецептов по ограничениям';slots.push(slot);continue;}
   const ranked=eligible.map(r=>{
-    const trial=basket(aggregate([...picked,r],people),c,opts.selected||{},now,opts.atHome||[]);
+    const trial=basket(weightedNeeds([...picked,{recipe:r,people}]),c,opts.selected||{},now,opts.atHome||[]);
     let delta=trial.unknownIngredients.length;
     const repeat=(use[r.id]||0)*15;
-    const recent=picked.slice(-3).filter(x=>x&&x.id===r.id).length*25;
+    const recent=picked.slice(-3).filter(x=>x.recipe?.id===r.id).length*25;
     const forbid=fixed[key]&&fixed[key]!==r.id?1000000:0;
     return {r,trial,score:trial.shortages.length*100000+forbid+delta*4+repeat+recent+hash(r.id+'-'+key+'-'+seed)*4};
   }).filter(x=>x.trial.shortages.length===0&&(fixed[key]==null||x.r.id===fixed[key])).sort((a,b)=>a.score-b.score);
-  if(ranked.length){slot.recipe=ranked[0].r;picked.push(ranked[0].r);use[ranked[0].r.id]=(use[ranked[0].r.id]||0)+1;}
+  if(ranked.length){slot.recipe=ranked[0].r;picked.push({recipe:ranked[0].r,people});use[ranked[0].r.id]=(use[ranked[0].r.id]||0)+1;}
   else slot.reason=fixed[key]?'Выбранное блюдо не обеспечено запасами':'Нет блюд из доступных товаров';
   slots.push(slot);
  }
- const b=basket(aggregate(picked,people),c,opts.selected||{},now,opts.atHome||[]);
- return {slots,basket:b,days,filled:slots.filter(x=>x.recipe).length,totalSlots:slots.length,used:use};
+ const b=basket(weightedNeeds(picked),c,opts.selected||{},now,opts.atHome||[]);
+ const skipped=slots.filter(x=>x.people===0).length;
+ return {slots,basket:b,days,filled:slots.filter(x=>x.recipe).length,
+  totalSlots:slots.length,activeSlots:slots.length-skipped,skipped,used:use};
 }
 function normalize(c){
  if(!Array.isArray(c.products)||!Array.isArray(c.ingredients))throw Error('Некорректный products.json');
@@ -116,5 +132,5 @@ function normalize(c){
  return {...c,byProduct,byIngredient};
 }
 function checkRecipes(rs,c){for(const r of rs){if(!MEALS.includes(r.meal))throw Error('Неверный приём пищи: '+r.id);for(const [id,q]of Object.entries(r.ingredients_per_person)){if(!c.byIngredient[id])throw Error('Нет ингредиента: '+id);if(!Number.isFinite(q)||q<=0)throw Error('Неверная порция: '+r.id+' '+id);}}}
-return {DAYS,MEALS,MEAL_NAMES,fresh,availability,priceCurrent,validProduct,allocateIngredient,basket,aggregate,plan,normalize,checkRecipes};
+return {DAYS,MEALS,MEAL_NAMES,fresh,availability,priceCurrent,validProduct,allocateIngredient,basket,aggregate,peopleForSlot,weightedNeeds,plan,normalize,checkRecipes};
 });

@@ -65,6 +65,14 @@ def main():
             raise SystemExit(f"Could not locate menu header/styles in {name}")
         page = page.replace("Для большой семейной закупки ·", "Дискаунтер ·")
         page = page.replace(
+            "Пилот v1.5 · меню на 3/7 дней и продукты дома.",
+            "Меню на 3 или 7 дней · порции по каждому приёму пищи.",
+        )
+        page = page.replace(
+            "app.js?v=pantry-20261014-v1",
+            f"app.js?v=attendance-{args.release_sha[:12]}",
+        )
+        page = page.replace(
             "Автоматическая выгрузка УТ 11 ещё не подключена; наличие и цену подтверждает магазин.",
             "Справочные клубные цены проходят проверку по датированным отчётам 1С. Актуальные цены и наличие подтверждает магазин.",
         )
@@ -120,12 +128,17 @@ def main():
         encoding="utf-8",
     )
     worker = dest / "sw.js"
-    worker.write_text(
-        worker.read_text(encoding="utf-8").replace(
-            "palleta-offline-v1-20261014-pantry-3day",
-            "palleta-offline-v2-20261019-vector-brand",
-        ), encoding="utf-8",
+    worker_text = worker.read_text(encoding="utf-8")
+    worker_text = worker_text.replace(
+        "palleta-offline-v1-20261014-pantry-3day",
+        "palleta-offline-release-" + args.release_sha[:12],
     )
+    if (dest / "assets" / "local-point-logo.webp").is_file():
+        worker_text = worker_text.replace(
+            "'./assets/palleta-logo.webp'",
+            "'./assets/palleta-logo.webp','./assets/local-point-logo.webp'",
+        )
+    worker.write_text(worker_text, encoding="utf-8")
     for name in ("index.html", "start.html"):
         page_file = dest / name
         page_file.write_text(

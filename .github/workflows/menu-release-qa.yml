@@ -1,0 +1,27 @@
+name: Verify unified Palleta menu release
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'menu/**'
+      - 'tools/prepare_menu_release.py'
+      - 'tools/test_menu_release_mobile.cjs'
+      - '.github/workflows/menu-release-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-unified-menu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser driver
+        run: npm install --no-save --ignore-scripts playwright-core@1.56.1
+      - name: Run staged storefront mobile integration tests
+        run: |
+          python3 -m http.server 8877 --bind 127.0.0.1 >/tmp/palleta-store-test.log 2>&1 &
+          node tools/test_menu_release_mobile.cjs
