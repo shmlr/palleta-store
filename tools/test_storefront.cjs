@@ -44,7 +44,9 @@ try{
   assert.equal(await contacts.locator('a[href^="https://wa.me/79637940001"]').count(),0,'LP contact not mixed in store');
   assert.equal(await contacts.locator('a[href="https://t.me/PALLETA01"]').count(),1);
   assert.equal(await contacts.locator('a[href="https://max.ru/u/f9LHodD0cOKYEWc4RJmLceBHb6KkAUR8mcx2h9XsGQ9ywbv4rfaQWYUG5AY"]').count(),1);
-  assert(await related.locator('img[alt="Логотип Local Point"]').evaluate(x=>x.complete&&x.naturalWidth>0),'real LP logo loads');
+  await related.scrollIntoViewIfNeeded();
+  await related.locator('img[alt="Логотип Local Point"]').evaluate(img=>img.decode());
+  assert(await related.locator('img[alt="Логотип Local Point"]').evaluate(x=>x.complete&&x.naturalWidth>0),'real LP logo loads after scroll');
   assert(await page.evaluate(()=>document.querySelector('#contacts').compareDocumentPosition(document.querySelector('#other-projects'))&Node.DOCUMENT_POSITION_FOLLOWING),'other projects come after store contact block');
   if(width<=390){
     await related.scrollIntoViewIfNeeded();
