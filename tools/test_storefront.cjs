@@ -13,7 +13,7 @@ assert(!html.includes('—'),'no em dash');
 assert(!html.includes('Онлайн-каталог'),'catalog not misrepresented');
 (async()=>{const browser=await chromium.launch({executablePath:process.env.CHROME_BIN||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 try{
- for(const width of [360,390,768,1440]){
+ for(const width of [320,360,390,768,1024,1440]){
   const page=await browser.newPage({viewport:{width,height:900},deviceScaleFactor:1});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   const r=await page.goto('http://127.0.0.1:8877/',{waitUntil:'networkidle'});
@@ -24,6 +24,39 @@ try{
   assert.equal(await page.locator('.panel-cta').getAttribute('href'),'menu/start.html');
   const menu=await page.request.get('http://127.0.0.1:8877/menu/start.html');assert(menu.ok(),'connected menu');
   assert.equal(await page.locator('.hero-benefits>div').count(),5);
+  const header=page.locator('.header');
+  const toggle=page.locator('.header-menu-button');
+  const nav=page.locator('#header-navigation');
+  const headHeight=await header.evaluate(el=>el.getBoundingClientRect().height);
+  if(width<=850){
+    assert(headHeight<=72,'sticky mobile header must be <=72px: '+headHeight);
+    assert(await toggle.isVisible(),'mobile toggle visible');
+    assert.equal(await toggle.getAttribute('aria-expanded'),'false','menu initially closed');
+    assert.equal(await nav.isVisible(),false,'mobile navigation hidden by default');
+    assert.equal(await page.locator('.header-phone').getAttribute('href'),'tel:+79882040001');
+    assert(await page.locator('.header-phone').isVisible(),'compact call icon visible');
+    await page.evaluate(()=>window.scrollTo(0,650));
+    await page.waitForTimeout(60);
+    assert(Math.abs(await header.evaluate(el=>el.getBoundingClientRect().top))<=1,'compact header stays at viewport top');
+    await toggle.click();
+    assert(await nav.isVisible(),'mobile navigation can open');
+    assert.equal(await toggle.getAttribute('aria-expanded'),'true');
+    const openedHeight=await header.evaluate(el=>el.getBoundingClientRect().height);
+    assert(openedHeight<=72,'open menu must overlay content, not expand sticky header');
+    const navHref=await nav.locator('a[href="#menu"]').getAttribute('href');
+    assert.equal(navHref,'#menu');
+    await page.screenshot({path:'/tmp/palleta-header-open-'+width+'.png'});
+    await page.keyboard.press('Escape');
+    assert.equal(await nav.isVisible(),false,'Escape closes navigation');
+    assert.equal(await toggle.getAttribute('aria-expanded'),'false');
+    await toggle.click();
+    await nav.locator('a[href="#menu"]').click();
+    assert.equal(await nav.isVisible(),false,'section selection closes menu');
+    assert.equal(await page.evaluate(()=>location.hash),'#menu');
+  }else{
+    assert.equal(await toggle.isVisible(),false,'desktop menu button hidden');
+    assert(await nav.isVisible(),'desktop full navigation stays visible');
+  }
   const scroll=await page.evaluate(()=>({vw:window.innerWidth,sw:document.documentElement.scrollWidth}));
   assert(scroll.sw<=width+1,'horizontal overflow '+JSON.stringify(scroll));
   await page.screenshot({path:'/tmp/palleta-home-'+width+'.png',fullPage:width<=390});
