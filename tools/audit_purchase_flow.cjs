@@ -31,7 +31,7 @@ finding('DATA-06','P1',catalog.products.some(x=>x.cost!==null&&x.cost!==undefine
 finding('DATA-07','P2',appJS.includes('prefs.budget')&&!/score[^;]*budget/.test(fs.readFileSync('menu/core.js','utf8'))?'LIMITATION':'PASS','Budget is a preference, not guaranteed limit','Budget not a constraint in core recipe ranking');
 finding('DATA-08','P2',homeHTML.includes('href="https://t.me/PALLETA01"')&&homeHTML.includes('id="other-projects"')?'PASS':'FAIL','Shop support separated from other projects','Homepage has separate partner section and store Telegram');
 
-(async()=>{
+;(async()=>{
  const browser=await chromium.launch({executablePath:process.env.CHROME_BIN||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
  try{
   for(const width of [360,390]){
