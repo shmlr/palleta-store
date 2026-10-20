@@ -11,9 +11,43 @@ function refClubCost(it){const p=it.p;if(!p||!['manual_club_snapshot','current_c
 const STATUS={in_stock:'подтверждено по выгрузке',unknown:'остаток уточняется',out_of_stock:'нет по выгрузке'};
 let catalog,recipes,step=0,seed=1,fixed={},chosen={},prefs={days:3,people:4,time:60,budget:0,excl:[],attendance:{}},lastPlan;
 let view='home',hasSavedPlan=false;
-let checkedItems=new Set(),homeIngredients=new Set();
+let checkedItems=new Set(),homeIngredients=new Set(),purchaseWishes={};
 const STORE_KEY='palleta-menu-v1';
 const WHATSAPP_NUMBER='79882040001';
+const safeWish=x=>String(x??'').replace(/[\x00-\x1f\x7f]/g,' ').trim().slice(0,90);
+function wishFor(it){return purchaseWishes[it.ingredient]||'';}
+function orderPreview(result){
+ const pending=pendingBasketItems(result),wished=pending.filter(it=>wishFor(it));
+ const current=pending.length>0&&!wished.length&&!result.basket.shortages.length&&pending.every(it=>it.priceCurrent&&it.stock==='in_stock');
+ const confirmed=current?Number(pending.reduce((n,it)=>n+it.cost,0).toFixed(2)):null;
+ const references=pending.filter(it=>!wishFor(it)&&refClubCost(it)!==null);
+ const reference=Number(references.reduce((n,it)=>n+refClubCost(it),0).toFixed(2));
+ return {pending,wished,confirmed,references,reference};
+}
+function budgetStatus(result){
+ const p=orderPreview(result),message=[];
+ if(prefs.budget)message.push('Ориентир бюджета на покупки в Паллете: до '+money(prefs.budget)+'. Мясо вне магазина отдельно.');
+ if(!p.pending.length)return message.concat('Не осталось товаров для заказа.').join(' ');
+ if(p.confirmed!==null){message.push('Расчёт по свежим данным: '+money(p.confirmed)+'.');if(prefs.budget)message.push(p.confirmed<=prefs.budget?'В пределах бюджета.':'Выше бюджета, требуется согласование.');}
+ else{message.push('Итоговая стоимость пока неизвестна.');if(p.references.length)message.push('Справочно: '+money(p.reference)+' по '+p.references.length+' из '+p.pending.length+' товаров (старые клубные цены, не текущая сумма).');if(p.wished.length)message.push('Замены: '+p.wished.length+' товар(ов), цена и фасовка требуют подтверждения.');if(prefs.budget)message.push('Соблюдение бюджета нельзя подтвердить без актуальных цен.');}
+ return message.join(' ');
+}
+function updateOrderLink(){
+ if(!lastPlan)return;
+ const p=orderPreview(lastPlan),wa=document.getElementById('whatsapp'),note=document.getElementById('purchase-pending'),status=document.getElementById('budget-progress');
+ if(note)note.textContent='В заявку: '+p.pending.length+' из '+lastPlan.basket.items.length+' позиций.';
+ if(status)status.textContent=budgetStatus(lastPlan);
+ const total=document.getElementById('order-value');
+ if(total)total.textContent=p.confirmed!==null?money(p.confirmed):'Полный итог пока неизвестен';
+ const reference=document.getElementById('reference-summary');
+ if(reference){
+  const known=p.references.filter(it=>!it.priceCurrent);
+  reference.hidden=!known.length;
+  if(known.length)reference.textContent='Справочная сумма по '+known.length+' из '+p.pending.length+' позиций без пожеланий: ≈ '+money(known.reduce((n,it)=>n+refClubCost(it),0))+'. Только датированные клубные цены, не подтверждённая стоимость.';
+ }
+ if(wa){if(p.pending.length){wa.setAttribute('href',whatsappHref(lastPlan));wa.removeAttribute('aria-disabled');wa.textContent='Отправить список в WhatsApp ↗';}else{wa.removeAttribute('href');wa.setAttribute('aria-disabled','true');wa.textContent='Все товары отмечены как купленные';}}
+}
+
 // Attribution only: no recipe identity or paid entitlement is inferred from these parameters.
 const BERBENA_RECIPES='https://berbena.pro/prorecepty';
 function berbenaHref(content='general'){
@@ -21,7 +55,7 @@ function berbenaHref(content='general'){
  return BERBENA_RECIPES+'?utm_source=palleta_menu&utm_medium=referral&utm_campaign=recipes_to_berbena&utm_content='+encodeURIComponent(token);
 }
 function saveState(){
- try{if(!window.localStorage)return;window.localStorage.setItem(STORE_KEY,JSON.stringify({version:3,step,seed,prefs,fixed,chosen,checked:[...checkedItems],home:[...homeIngredients]}));}catch(e){}
+ try{if(!window.localStorage)return;window.localStorage.setItem(STORE_KEY,JSON.stringify({version:3,step,seed,prefs,fixed,chosen,checked:[...checkedItems],home:[...homeIngredients],wishes:purchaseWishes}));}catch(e){}
 }
 function loadState(){
  try{
@@ -52,6 +86,11 @@ function loadState(){
   const valid=new Set(catalog.products.map(p=>p.id));
   if(Array.isArray(s.checked))checkedItems=new Set(s.checked.filter(x=>valid.has(x)));
   if(Array.isArray(s.home))homeIngredients=new Set(s.home.filter(id=>catalog.byIngredient[id]&&catalog.byIngredient[id].sold_in_palleta!==false));
+   if(s.wishes&&typeof s.wishes==='object'&&!Array.isArray(s.wishes))for(const [id,value] of Object.entries(s.wishes)){
+    if(Object.hasOwn(catalog.byIngredient,id)&&catalog.byIngredient[id].sold_in_palleta!==false&&typeof value==='string'){
+     const cleaned=safeWish(value);if(cleaned)purchaseWishes[id]=cleaned;
+    }
+   }
  }catch(e){}
 }
 
@@ -69,7 +108,7 @@ function renderHome(){
  else h+='<button class="btn secondary" id="demo-menu">Посмотреть пример меню</button>';
  h+='</div><div class="panel home-about"><h2>Как это работает</h2><p><b>1.</b> Выберите количество людей, время и ограничения.</p><p><b>2.</b> Получите меню, меняйте блюда и подходящие продукты.</p><p><b>3.</b> Отметьте, что уже есть дома, и отправьте оставшуюся корзину в Паллету.</p></div><p class="muted">Клубные цены показаны справочно с датой. Наличие и итоговую сумму подтвердит магазин.</p>';
  $.innerHTML=h;
- document.getElementById('start-menu').onclick=()=>{step=0;seed=1;fixed={};chosen={};checkedItems.clear();homeIngredients.clear();prefs.days=3;prefs.attendance={};hasSavedPlan=false;view='planner';render();};
+ document.getElementById('start-menu').onclick=()=>{step=0;seed=1;fixed={};chosen={};checkedItems.clear();homeIngredients.clear();purchaseWishes={};prefs.days=3;prefs.attendance={};hasSavedPlan=false;view='planner';render();};
  if(hasSavedPlan)document.getElementById('continue-menu').onclick=()=>{step=Q.length;view='planner';render();};
  else document.getElementById('demo-menu').onclick=()=>{step=Q.length;view='planner';render();};
 }
@@ -103,8 +142,10 @@ function alternativesFor(slot){
 function basketText(result){
  let t=`Паллета. Заявка на проверку корзины\nКЛУБНЫЕ ЦЕНЫ: только по карте Паллеты.\n${prefs.days===3?'3 дня':'7 дней'}, завтрак / обед / ужин, на ${prefs.people} чел.\n`;
  for(const slot of result.slots)t+=`${C.DAYS[slot.day]} ${C.MEAL_NAMES[slot.meal]} (${slot.mode==='picnic'?'пикник':slot.people+' чел. дома'}): ${slot.recipe?slot.recipe.name:slot.reason||'НЕ ПОДОБРАНО'}\n`;
+ if(prefs.budget)t+='\nОриентир бюджета на товары Паллеты: до '+money(prefs.budget)+' (без мяса вне магазина).\n';
  t+='\nКупить в Паллете (предварительная заявка):\n';
- for(const it of pendingBasketItems(result)){const ref=refClubCost(it);
+ for(const it of pendingBasketItems(result)){const ref=refClubCost(it),wish=wishFor(it);
+  if(wish){t+='• '+it.ing.name+': хочу «'+wish+'»; расчётная потребность '+qfmt(it.quantity)+' '+it.p.unit+'; фасовку, количество и стоимость уточнить.\n';continue;}
   const qty=it.p.pricing_mode==='by_weight'?`${qfmt(it.quantity)} ${it.p.unit}`:`${it.packs} уп. по ${qfmt(it.p.pack_size)} ${it.p.unit}`;
   t+=`• ${it.p.name} — ${qty}; наличие ${STATUS[it.stock]}; ${it.priceCurrent?'клубная стоимость '+money(it.cost):ref!==null?'справочная стоимость '+money(ref)+' по клубным ценам от '+humanDate(it.p.price_as_of):'клубная цена неизвестна'}\n`;
  }
@@ -127,12 +168,17 @@ function pendingBasketItems(result){return result.basket.items.filter(it=>!check
 function whatsappOrderText(result){
  const lines=['Здравствуйте! Прошу проверить наличие и собрать продукты в «Паллете» по меню на неделю.',
   'Семья: '+prefs.people+' чел. · '+prefs.days+' дн. · '+result.filled+' блюд, '+result.skipped+' приёмов пищи без готовки дома.',
-  'Список покупок:'];
+  ];
+ if(prefs.budget)lines.push('Ориентир бюджета на товары Паллеты: до '+money(prefs.budget)+'. Мясо вне магазина отдельно.');
+ lines.push('Список покупок:');
  for(const it of pendingBasketItems(result)){
+  const wish=wishFor(it);
+  if(wish){lines.push('• '+it.ing.name+': хочу «'+wish+'»; расчётная потребность '+qfmt(it.quantity)+' '+it.p.unit+' (количество упаковок и стоимость подтвердите).');continue;}
   const quantity=it.p.pricing_mode==='by_weight'?qfmt(it.quantity)+' '+it.p.unit:it.packs+' уп. по '+qfmt(it.p.pack_size)+' '+it.p.unit;
   lines.push('• '+it.p.name+' — '+quantity);
  }
  if(result.basket.shortages.length)lines.push('Не подобраны: '+result.basket.shortages.map(i=>i.name||i.id).join(', '));
+ if(orderPreview(result).wished.length)lines.push('Уточните замены с покупателем перед сборкой.');
  lines.push('Прошу подтвердить фактическое наличие, клубные цены, возможные замены и итоговую сумму.');
  lines.push('Заявка предварительная. До подтверждения магазином заказ не оформлен.');
  return lines.join('\n');
@@ -167,28 +213,37 @@ function renderResult(message=''){
    if((p.slots.indexOf(slot)+1)%3===0)h+='</div>';
  }
  h+='<div class="panel" id="shopping"><h2>Купить в Паллете</h2><p class="small">В сумму и заявку входят только товары Паллеты, которых нет дома. Мясо учитывается отдельно.</p>';
- const currentConfirm=b.confirmedTotal!==null;
- h+=`<div class="value">${currentConfirm?money(b.confirmedTotal):'Полный итог пока неизвестен'}</div>`;
+ const order=orderPreview(lastPlan),currentConfirm=order.confirmed!==null;
+ h+=`<div class="value" id="order-value">${currentConfirm?money(order.confirmed):'Полный итог пока неизвестен'}</div>`;
  h+=`<p class="muted">${currentConfirm?'Все позиции покрыты свежими остатками и клубными ценами из УТ 11. Расчёт действует при предъявлении карты; чек подтвердит магазин.':'Клубный итог пока неизвестен: нужны свежие подтверждённые цены по карте и остатки. Исторические розничные цены не учитываются.'}</p>`;
  h+=`<p class="small">Позиции: ${b.items.length} · Без свежего остатка: ${b.items.filter(x=>x.stock!=='in_stock').length} · Без свежей цены: ${b.items.filter(x=>!x.priceCurrent).length} · Нехватка: ${b.shortages.length}</p>`;
- const known=b.items.filter(it=>refClubCost(it)!==null&&!it.priceCurrent);
- if(known.length){const estimate=known.reduce((sum,it)=>sum+refClubCost(it),0);h+=`<div class="note"><b>Справочная сумма по ${known.length} из ${b.items.length} позиций: ≈ ${money(estimate)}</b><p class="small">Только товары с известной клубной ценой на дату выгрузки. Это не полная стоимость корзины и не подтверждённый заказ.</p></div>`;}
+ const known=order.references.filter(it=>!it.priceCurrent);
+ if(known.length){const estimate=known.reduce((sum,it)=>sum+refClubCost(it),0);h+=`<div class="note" id="reference-summary"><b>Справочная сумма по ${known.length} из ${order.pending.length} позиций без пожеланий: ≈ ${money(estimate)}</b><p class="small">Только товары с известной клубной ценой на дату выгрузки. Это не полная стоимость корзины и не подтверждённый заказ.</p></div>`;}
  if(p.filled<p.activeSlots)h+=`<p class="error">${p.activeSlots-p.filled} блюд не подобрано: в каталоге нет подтверждённых подходящих сочетаний при ваших ограничениях.</p>`;
- if(prefs.budget){h+=`<p class="small">Бюджет: ${money(prefs.budget)}. ${currentConfirm?b.confirmedTotal<=prefs.budget?'Собранная корзина укладывается в бюджет по данным последней выгрузки.':'Внимание: корзина превышает выбранный бюджет.':'Проверка бюджета заблокирована неполными данными.'}</p>`;}
+ h+=`<p class="small" id="budget-progress">${esc(budgetStatus(lastPlan))}</p>`;
  h+='</div><div class="panel"><h2>Список покупок в Паллете <span class="pill" id="check-count">'+b.items.filter(x=>checkedItems.has(x.p.id)).length+' / '+b.items.length+' куплено</span></h2><p class="muted">Отметка «Куплено» исключает товар из WhatsApp-заявки и копируемого списка. «Уже есть дома» убирает ингредиент из расчёта корзины. Значок ≈ означает справочную цену.</p><p class="small" id="purchase-pending">В заявку: '+pendingBasketItems(lastPlan).length+' из '+b.items.length+' позиций.</p>';
  for(const it of b.items){const opts=(it.ing.product_ids||[]).map(id=>catalog.byProduct[id]).filter(x=>C.validProduct(x,it.ing)&&C.availability(x,catalog)!=='out_of_stock');
- const ref=refClubCost(it);
- h+=`<div class="product"><div class="product-head"><label class="check-row"><input class="shopping-check" type="checkbox" data-check="${esc(it.p.id)}" ${checkedItems.has(it.p.id)?'checked':''} aria-label="Куплено: ${esc(it.p.name)}"><span class="basket-name">${esc(it.ing.name)}</span></label><span class="amount">${it.priceCurrent?money(it.cost):ref!==null?'≈ '+money(ref):'цену уточнить'}</span></div>`;
+ const ref=refClubCost(it),wish=wishFor(it);
+ h+=`<div class="product"><div class="product-head"><label class="check-row"><input class="shopping-check" type="checkbox" data-check="${esc(it.p.id)}" ${checkedItems.has(it.p.id)?'checked':''} aria-label="Куплено: ${esc(it.p.name)}"><span class="basket-name">${esc(it.ing.name)}</span></label><span class="amount">${wish?'цену уточнить':it.priceCurrent?money(it.cost):ref!==null?'≈ '+money(ref):'цену уточнить'}</span></div>`;
  const qty=it.p.pricing_mode==='by_pack'?`${it.packs} уп. по ${qfmt(it.p.pack_size)} ${esc(it.p.unit)} · всего ${qfmt(it.quantity)} ${esc(it.p.unit)}`:`${qfmt(it.quantity)} ${esc(it.p.unit)}`;
  h+=`<p class="small">${esc(it.p.name)} · ${qty} · ${esc(STATUS[it.stock])}</p>`;
  h+=`<label class="small home-checkbox"><input type="checkbox" data-home="${esc(it.ing.id)}"> Уже есть дома — убрать из заявки</label>`;
  
- if(it.priceKnown&&!it.priceCurrent)h+=`<p class="small">Последняя известная клубная стоимость ${money(it.cost)} · не текущая цена</p>`;
- if(ref!==null&&!it.priceCurrent){h+=`<p class="small">Клубная цена на ${esc(humanDate(it.p.price_as_of))}: ${money(it.p.price)} за ${it.p.pricing_mode==='by_pack'?'упаковку':esc(it.p.unit)}. Справочно, не текущая цена.</p>`;}
+ h+=`<p class="small warning" data-wish-note="${esc(it.ingredient)}">${wish?'Пожелание: '+esc(wish)+'. Показанная фасовка используется только для рецепта. Цену и количество уточнит магазин.':''}</p>`;
+ if(it.priceKnown&&!it.priceCurrent)h+=`<p class="small" data-reference-info ${wish?'hidden':''}>Последняя известная клубная стоимость ${money(it.cost)} · не текущая цена</p>`;
+ if(ref!==null&&!it.priceCurrent){h+=`<p class="small" data-reference-info ${wish?'hidden':''}>Клубная цена на ${esc(humanDate(it.p.price_as_of))}: ${money(it.p.price)} за ${it.p.pricing_mode==='by_pack'?'упаковку':esc(it.p.unit)}. Справочно, не текущая цена.</p>`;}
  if(opts.length>1){h+=`<label class="small" for="select-${esc(it.ingredient)}">Заменить на аналог или другую фасовку</label><select id="select-${esc(it.ingredient)}" data-ingredient="${esc(it.ingredient)}">`;
- for(const op of opts)h+=`<option value="${esc(op.id)}" ${op.id===it.p.id?'selected':''}>${esc(op.name)} · ${esc(STATUS[C.availability(op,catalog)])}</option>`;
+ for(const op of opts){
+  const dated=['manual_club_snapshot','current_club'].includes(op.price_source)&&op.price_type==='Оптовая, RUB'&&Number.isFinite(op.price)&&op.price_as_of;
+  const hint=dated?' · ≈ '+money(op.price)+' за '+(op.pricing_mode==='by_pack'?'уп.':op.unit)+' на '+humanDate(op.price_as_of)+' (справочно)':' · цену уточнить';
+  h+=`<option value="${esc(op.id)}" ${op.id===it.p.id?'selected':''}>${esc(op.name)} · ${esc(STATUS[C.availability(op,catalog)])}${esc(hint)}</option>`;
+ }
  h+='</select>';
  }
+ const suggested=(it.ing.product_ids||[]).map(id=>catalog.byProduct[id]).filter(x=>x&&x.id!==it.p.id&&x.sold_in_palleta!==false);
+ h+=`<label class="small" for="wish-${esc(it.ingredient)}">Марка, сорт или фасовка по желанию (магазин подтвердит)</label><input id="wish-${esc(it.ingredient)}" data-wish="${esc(it.ingredient)}" type="text" maxlength="90" list="wish-list-${esc(it.ingredient)}" autocomplete="off" value="${esc(wish)}" placeholder="Как в списке или укажите свой вариант" style="display:block;width:100%;min-height:44px;padding:10px 12px;border:1px solid #c8d3df;border-radius:10px;font-size:16px"><datalist id="wish-list-${esc(it.ingredient)}">`;
+ for(const alt of suggested)h+=`<option value="${esc(alt.name)}"></option>`;
+ h+='</datalist><p class="small">Пожелание заменяет товар в заявке, но не подставляет неподтверждённую цену или число упаковок.</p>';
  h+='</div>';
  }
  if(!b.items.length)h+='<p class="small">По этому меню нет товаров для покупки в Паллете.</p>';
@@ -241,21 +296,35 @@ h+='<p class="muted">* Соль, вода и специи для многих р
   if(el.checked)homeIngredients.add(el.dataset.home);else homeIngredients.delete(el.dataset.home);
   renderResult(el.checked?'Продукт уже есть дома, поэтому исключён из заявки.':'Продукт возвращён в покупки.');
  });
+ $.querySelectorAll('[data-wish]').forEach(el=>{
+  el.oninput=()=>{
+   const id=el.dataset.wish,value=safeWish(el.value);
+   if(value)purchaseWishes[id]=value;else delete purchaseWishes[id];
+   const it=lastPlan.basket.items.find(x=>x.ingredient===id);
+   const row=el.closest('.product');
+   if(it&&row){
+    const amount=row.querySelector('.amount'),ref=refClubCost(it);
+    if(amount)amount.textContent=value?'цену уточнить':it.priceCurrent?money(it.cost):ref!==null?'≈ '+money(ref):'цену уточнить';
+    row.querySelectorAll('[data-reference-info]').forEach(x=>x.hidden=!!value);
+    const note=row.querySelector('[data-wish-note]');
+    if(note)note.textContent=value?'Пожелание: '+value+'. Показанная фасовка используется только для рецепта. Цену и количество уточнит магазин.':'';
+   }
+   saveState();updateOrderLink();
+  };
+ });
  $.querySelectorAll('[data-check]').forEach(el=>el.onchange=()=>{
   if(el.checked)checkedItems.add(el.dataset.check);else checkedItems.delete(el.dataset.check);
   saveState();
   const count=document.getElementById('check-count');
   if(count)count.textContent=b.items.filter(x=>checkedItems.has(x.p.id)).length+' / '+b.items.length+' куплено';
-  const pending=pendingBasketItems(lastPlan),wa=document.getElementById('whatsapp'),note=document.getElementById('purchase-pending');
-  if(note)note.textContent='В заявку: '+pending.length+' из '+b.items.length+' позиций.';
-  if(wa){if(pending.length){wa.setAttribute('href',whatsappHref(lastPlan));wa.removeAttribute('aria-disabled');wa.textContent='Отправить список в WhatsApp ↗';}else{wa.removeAttribute('href');wa.setAttribute('aria-disabled','true');wa.textContent='Все товары отмечены как купленные';}}
+  updateOrderLink();
  });
  $.querySelectorAll('[data-slot]').forEach(sel=>sel.onchange=()=>{if(!sel.value)return;const orig=fixed[sel.dataset.slot];fixed[sel.dataset.slot]=sel.value;const check=C.plan(catalog,recipes,prefs,{seed,fixed,selected:chosen,atHome:[...homeIngredients]});
   const target=check.slots.find(s=>s.key===sel.dataset.slot);
   if(!target?.recipe){if(orig===undefined)delete fixed[sel.dataset.slot];else fixed[sel.dataset.slot]=orig;renderResult('Выбранное блюдо не удаётся обеспечить в рамках доступных запасов. Предложите другую замену.');}
   else renderResult('Блюдо заменено. Корзина пересчитана; при ограниченных остатках другие блюда тоже могут измениться.');
  });
- $.querySelectorAll('[data-ingredient]').forEach(sel=>sel.onchange=()=>{chosen[sel.dataset.ingredient]=sel.value;renderResult('Товар заменён. Итог и остатки пересчитаны для всей недели.');});
+ $.querySelectorAll('[data-ingredient]').forEach(sel=>sel.onchange=()=>{chosen[sel.dataset.ingredient]=sel.value;delete purchaseWishes[sel.dataset.ingredient];renderResult('Товар заменён. Итог и остатки пересчитаны для всей недели.');});
  document.getElementById('copy').onclick=async()=>{const t=basketText(lastPlan),btn=document.getElementById('copy');try{await navigator.clipboard.writeText(t);btn.textContent='Список скопирован';}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();if(document.execCommand('copy'))btn.textContent='Список скопирован';else window.prompt('Скопируйте список:',t);ta.remove();}};
  document.getElementById('share').onclick=async()=>{const t=basketText(lastPlan);if(navigator.share){try{await navigator.share({title:'Паллета: меню на неделю',text:t});return;}catch(e){if(e.name==='AbortError')return;}}
   try{await navigator.clipboard.writeText(t);document.getElementById('share').textContent='Список скопирован';}catch(e){window.prompt('Скопируйте список:',t);}
