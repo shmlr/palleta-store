@@ -3,9 +3,13 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const {chromium}=require('playwright-core');
 const base=process.env.TEST_URL||'http://127.0.0.1:8877/';
-const sourceSHA='497af8302e6a2ca16529c1651dde5d084d70b5b1';
+const sourceSHA='6ff18d45360237befd05cb591d2f3b591fa09c75';
 const html=fs.readFileSync('menu/start.html','utf8');
 const app=fs.readFileSync('menu/app.js','utf8');
+const publicCatalog=JSON.parse(fs.readFileSync('menu/products.json','utf8'));
+assert(!('source_notes' in publicCatalog),'1C source notes not published');
+assert(publicCatalog.products.every(p=>p.availability==='unknown'&&!('internal_code' in p)&&!('stock_quantity' in p)&&!('sku_code' in p)),'no internal identity or warehouse counts in public JSON');
+
 const release=fs.readFileSync('menu/RELEASE.txt','utf8');
 assert(release.includes(sourceSHA));
 assert.equal((html.match(/class="lp-referral"/g)||[]).length,1,'one Local Point block');
@@ -55,6 +59,23 @@ try{
   await page.getByRole('button',{name:'Посмотреть пример меню'}).click();
   await page.getByRole('heading',{name:'Семейное меню на 3 дня'}).waitFor();
   assert.equal(await page.locator('.slot').count(),9);
+  assert.equal(await page.getByText('Какие SKU стоит проверить').count(),0,'buyer UI has no internal SKU diagnostics');
+  const bought=page.locator('input.shopping-check').first();
+  const whatsapp=page.locator('#whatsapp');
+  const beforeBought=await whatsapp.getAttribute('href');
+  assert(beforeBought?.startsWith('https://wa.me/79882040001?text='));
+  await bought.check();
+  const afterBought=await whatsapp.getAttribute('href');
+  assert.notEqual(afterBought,beforeBought,'purchased product removed from outgoing order');
+  assert(new URL(afterBought).searchParams.get('text').length<new URL(beforeBought).searchParams.get('text').length);
+  await bought.uncheck();
+  assert.equal(await whatsapp.getAttribute('href'),beforeBought,'unchecking restores outgoing order');
+  for(const cb of await page.locator('input.shopping-check').all())await cb.check();
+  assert.equal(await whatsapp.getAttribute('href'),null,'zero pending items must not create empty order');
+  assert.equal(await whatsapp.getAttribute('aria-disabled'),'true');
+  for(const cb of await page.locator('input.shopping-check').all())await cb.uncheck();
+  assert.equal(await whatsapp.getAttribute('href'),beforeBought,'restored cart is available for test purchase');
+
   assert.equal(await page.locator('details.meal-attendance-details[open]').count(),0);
   await page.locator('[data-attendance-key="0-lunch"] > summary').click();
   await page.locator('[data-attendance="0-lunch"]').selectOption('2');
