@@ -38,10 +38,29 @@ try{
   assert.equal(await contacts.locator('.contact-link').count(),3,'store socials have 3 links');
   assert.equal(await related.locator('.related-project-card').count(),2,'two other projects');
   assert.equal(await related.locator('a[href*="berbena.pro/prorecepty"]').count(),1);
-  const lp=related.locator('a[href^="https://wa.me/79637940001"]');
-  assert.equal(await lp.count(),1);
-  assert.equal(await related.locator('a[href^="tel:"]').count(),0,'no confusing partner contact numbers');
+  const lpCard=related.locator('.related-project-card--lp');
+  assert.equal(await lpCard.count(),1,'one separate LP block');
+  const lp=lpCard.locator('a[href^="https://wa.me/79637940001"]');
+  assert.equal(await lp.count(),2,'compact WhatsApp icon and clear WhatsApp CTA');
+  assert.equal(await lpCard.locator('.lp-mini-socials a').count(),4,'same four contact icons as menu');
+  assert.equal(await lpCard.locator('.lp-icon-call').getAttribute('href'),'tel:+79637940001');
+  assert.equal(await lpCard.locator('.lp-icon-tg').getAttribute('href'),'https://t.me/Local_01');
+  assert.equal(await lpCard.locator('.lp-icon-max').getAttribute('href'),'https://max.ru/u/f9LHodD0cOLOdqweo6ZD2M-8go71XGKMQN7-aZq8vsAcHJBEE3f3_rRGGqI');
+  assert.equal(await lpCard.locator('.lp-mini-phone').getAttribute('href'),'tel:+79637940001');
+  assert.equal(await lpCard.locator('.lp-mini-phone').evaluate(el=>getComputedStyle(el).textDecorationLine),'none','LP phone is not underlined');
+  for(const btn of await lpCard.locator('.lp-icon-btn').all()){
+    const rect=await btn.boundingBox();
+    assert(rect.width>=43&&rect.height>=43,'all icons have accessible 44px targets');
+  }
+  const cards=await related.locator('.related-project-card').all();
+  for(const card of cards)assert.equal(await card.evaluate(el=>getComputedStyle(el).alignSelf),'start','resource card does not vertically stretch');
+  if(width<=720){
+    assert.equal(await lpCard.locator('.lp-mini-socials').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length),2,'LP social icons 2x2 on mobile');
+  }else{
+    assert.equal(await lpCard.locator('.lp-mini-socials').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length),4,'four LP icons in one desktop row');
+  }
   assert.equal(await contacts.locator('a[href^="https://wa.me/79637940001"]').count(),0,'LP contact not mixed in store');
+  assert.equal(await contacts.locator('a[href^="tel:+79637940001"]').count(),0,'LP calls never appear in store support');
   assert.equal(await contacts.locator('a[href="https://t.me/PALLETA01"]').count(),1);
   assert.equal(await contacts.locator('a[href="https://max.ru/u/f9LHodD0cOKYEWc4RJmLceBHb6KkAUR8mcx2h9XsGQ9ywbv4rfaQWYUG5AY"]').count(),1);
   await related.scrollIntoViewIfNeeded();
