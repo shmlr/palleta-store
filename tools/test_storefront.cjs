@@ -59,6 +59,8 @@ try{
   }
   const scroll=await page.evaluate(()=>({vw:window.innerWidth,sw:document.documentElement.scrollWidth}));
   assert(scroll.sw<=width+1,'horizontal overflow '+JSON.stringify(scroll));
+  await page.evaluate(()=>window.scrollTo(0,0));
+  await page.waitForTimeout(70);
   await page.screenshot({path:'/tmp/palleta-home-'+width+'.png',fullPage:width<=390});
   assert.deepEqual(errors,[]);
   console.log('PASS approved Palleta homepage at '+width+'px');
