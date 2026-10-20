@@ -33,5 +33,6 @@ jobs:
           path: |
             /tmp/palleta-home-*.png
             /tmp/palleta-header-open-*.png
+            /tmp/palleta-other-projects-*.png
           retention-days: 7
           if-no-files-found: warn
