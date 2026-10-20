@@ -30,6 +30,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: approved-palleta-cover-preview
-          path: /tmp/palleta-home-*.png
+          path: |
+            /tmp/palleta-home-*.png
+            /tmp/palleta-header-open-*.png
           retention-days: 7
           if-no-files-found: warn

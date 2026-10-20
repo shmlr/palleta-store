@@ -145,3 +145,48 @@ section[id]{scroll-margin-top:120px}
 .assortment-grid>div{min-height:115px;padding:14px;gap:20px}
 }
 @media(max-width:355px){.hero-benefits{grid-template-columns:1fr}.hero-grocery{width:45%}.hero h1{font-size:2rem}}
+
+
+/* Mobile compact sticky header: only the brand, call shortcut and collapsible navigation */
+.header-menu-button{display:none}
+@media(max-width:850px){
+  .header{position:sticky;top:0;z-index:30;overflow:visible}
+  .header-inner{
+    display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;
+    align-items:center;justify-content:stretch;column-gap:8px;row-gap:0;
+    padding:7px 16px;min-height:64px;flex-direction:row;flex-wrap:nowrap
+  }
+  .header .logo{grid-column:1;grid-row:1;align-self:center;min-width:0;display:inline-flex;max-width:100%}
+  .header .official-logo{display:block;width:min(174px,100%);max-height:48px;height:auto;object-fit:contain}
+  .header-menu-button{
+    grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;
+    width:44px;height:44px;border:1px solid #dce5ef;background:#fff;
+    color:var(--blue);border-radius:10px;cursor:pointer;padding:0
+  }
+  .menu-bars{display:flex;flex-direction:column;justify-content:center;gap:5px;width:19px;height:20px}
+  .menu-bars i{display:block;background:currentColor;width:100%;height:2px;border-radius:2px}
+  .header-menu-button:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+  .header-phone{
+    grid-column:3;grid-row:1;display:flex;align-items:center;justify-content:center;
+    margin:0;width:44px;height:44px;border:1px solid #dce5ef;
+    border-radius:10px;background:#f5f8fc;color:var(--blue);min-width:44px
+  }
+  .header-phone svg{width:21px;height:21px;flex:none}
+  .header-phone>span{display:none}
+  .header nav,
+  .header-inner nav{
+    display:none;position:absolute;left:0;right:0;top:100%;
+    width:100%;padding:10px 16px 15px;margin:0;
+    background:#fff;border-top:1px solid #edf1f5;
+    box-shadow:0 14px 24px #0b31502d;border-radius:0 0 14px 14px;
+    gap:2px;z-index:35;max-height:min(70vh,420px);overflow-y:auto
+  }
+  .header.nav-open nav,.header.nav-open .header-inner nav{display:grid;grid-template-columns:1fr}
+  .header nav a{font-size:15px;display:flex;align-items:center;min-height:44px;padding:9px 12px;border-radius:9px}
+  .header nav a:hover,.header nav a:focus-visible{background:#eef4f9}
+  section[id]{scroll-margin-top:76px}
+}
+@media(max-width:390px){
+  .header-inner{padding:7px 12px;column-gap:7px}
+  .header .official-logo{width:min(155px,100%)}
+}
