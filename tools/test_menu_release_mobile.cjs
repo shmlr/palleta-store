@@ -68,6 +68,12 @@ try{
   const afterBought=await whatsapp.getAttribute('href');
   assert.notEqual(afterBought,beforeBought,'purchased product removed from outgoing order');
   assert(new URL(afterBought).searchParams.get('text').length<new URL(beforeBought).searchParams.get('text').length);
+  const boughtName=(await bought.getAttribute('aria-label')).replace(/^Куплено: /,'');
+  assert(!new URL(afterBought).searchParams.get('text').includes('• '+boughtName+' —'),'actual SKU absent from WhatsApp order');
+  await page.reload({waitUntil:'networkidle'});
+  await page.getByRole('button',{name:'Продолжить сохранённое меню'}).click();
+  assert(await bought.isChecked(),'purchased item stays purchased after reload');
+  assert.equal(await whatsapp.getAttribute('href'),afterBought,'saved WhatsApp message stays correctly filtered');
   await bought.uncheck();
   assert.equal(await whatsapp.getAttribute('href'),beforeBought,'unchecking restores outgoing order');
   for(const cb of await page.locator('input.shopping-check').all())await cb.check();
@@ -75,6 +81,17 @@ try{
   assert.equal(await whatsapp.getAttribute('aria-disabled'),'true');
   for(const cb of await page.locator('input.shopping-check').all())await cb.uncheck();
   assert.equal(await whatsapp.getAttribute('href'),beforeBought,'restored cart is available for test purchase');
+  const storeAlt=page.locator('.panel').filter({has:page.locator('#check-count')}).locator('select[data-ingredient]').first();
+  assert(await storeAlt.count()>0,'store basket offers a pack/product alternative');
+  const originalId=await storeAlt.inputValue();
+  const variant=await storeAlt.locator('option').evaluateAll((options,id)=>options.filter(o=>o.value!==id).map(o=>({id:o.value,name:o.textContent.split(' · ')[0]}))[0],originalId);
+  assert(variant?.id,'alternate product has a valid id');
+  await storeAlt.selectOption(variant.id);
+  const alternateHref=await whatsapp.getAttribute('href');
+  assert(alternateHref&&alternateHref!==beforeBought,'changing pack changes WhatsApp request');
+  assert(new URL(alternateHref).searchParams.get('text').includes('• '+variant.name+' —'),'chosen alternative appears in real WhatsApp text');
+  await storeAlt.selectOption(originalId);
+  assert.equal(await whatsapp.getAttribute('href'),beforeBought,'switching back restores original request');
 
   assert.equal(await page.locator('details.meal-attendance-details[open]').count(),0);
   await page.locator('[data-attendance-key="0-lunch"] > summary').click();
