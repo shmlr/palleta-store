@@ -1,35 +1,23 @@
 {
   "schema_version": 2,
   "data_status": "historical_seed_not_live",
-  "source_notes": [
-    "Fresh: Retail OS Fresh RAW 31d 24.09.2026; цены по данным прежнего пилота, историческая средняя, не кассовая цена сегодня.",
-    "Часть фасованной продукции: согласованные рабочие цены от 05.10.2026. Они не доказывают наличие и текущую цену.",
-    "Всё наличие пока UNKNOWN. Нет интеграции с 1С или автоматического обновления.",
-    "Исторические обычные розничные цены не подтверждают клубные цены и не используются в расчёте клубной корзины.",
-    "12.10.2026: в ведомости УТ артикул риса Мистраль 900 г = 10213; Код для поиска не подтвержден, sku_code очищен.",
-    "13.10.2026: склад Паллета Петра 1; УТ отчёт показывает коды рис УТ-00001079 и картофель УТ-00003202 в колонке 'Номенклатура.К...' с обрезанным заголовком. Это кандидаты на сверку с каноническим Кодом для поиска. Наличие резервов владелец отрицает; фактическая доступность и WMS остаются для проверки.",
-    "13.10.2026: «Номенклатура.Код для поиска» видно полностью: картофель=3202, рис Мистраль Янтарь 900 г=1079. Розничный вид Оптовая для держателей карт: 49,96 ₽/кг и 179,97 ₽/шт; источник — ручной снимок «Печать ценников из документа», не live-файл.",
-    "13.10.2026: не подтверждённые повторно префиксные УТ-коды 7 других SKU сохранены как legacy_sku_code; автоматический whitelist только по двум проверенным кодам. Учётные остатки 823,316 кг и 5 шт. не опубликованы как доступные.",
-    "13.10.2026: импорт требует пару (внутренний код УТ, Код для поиска); совпадение лишь одного короткого кода не допускается.",
-    "Клубные цены по 10 точно сопоставленным товарам сохранены как ручной снимок min-max от 13.10.2026. Справочно, не текущие цены и не гарантия наличия. Активный whitelist импорта по прежнему 2 SKU.",
-    "14.10.2026: яйца лоток 30 шт. С1 приоритетно по просьбе владельца, СО 10 шт. остаются альтернативой. Шамс 900 г, Снежана 2 кг, филе СП Паллета — отдельные аналоги со своими ID. Цена С1 30, риса Шамс и муки Снежана — датированный срез min-max 13.10.",
-    "14.10.2026: восемь справочных клубных цен обновлены из нового отчёта min-max «Паллета 1С - Меню» 15:20, включая помидоры Новичок 59,96 ₽/кг. Статус остатка UNKNOWN, не использовать как онлайн.",
-    "14.10.2026: пользователь подтвердил наличие зелени как категории, а не точные остатки SKU. Добавлены петрушка и кинза как ручные варианты наряду с укропом; цены/единицы не подтверждены.",
-    "14.10.2026: грудка без кости как замена филе; хек как аналог минтая по белой рыбе (наименование в min-max). Потроха — отдельный ингредиент и два самостоятельных рецепта, а не автоматическая замена филе.",
-    "Все новые товары с sku_code=null, без live-цен и текущих запасов; данные по WhatsApp передаются покупателем только после нажатия на ссылку.",
-    "14.10.2026 v1.4: мясо, фарш, филе, грудка и потроха больше не продаются через меню Паллеты; сохраняются в рецептах как домашняя/внешняя потребность; в WhatsApp-заявки не попадают, цена магазина не рассчитывается.",
-    "14.10.2026 v1.4: зелень связана с группой «Рынок 2» в УТ 11; укроп, петрушка, кинза подтверждены архивными сведениями, дата не доказывает текущее наличие, шт≠пучок без проверки.",
-    "14.10.2026 20:52:52 +03:00: датированный расширенный XLS min-max (14553 строк) проверен по 7 весовым клубным ценам, внутренним кодам, названиям и единицам кг; цены без изменений, метки времени среза обновлены вручную. Данные наличия не публиковались; ежедневная автоматическая синхронизация Gmail→GitHub не включена.",
-    "2026-10-17T19:06:32+03:00: контрольный импорт 1 клубных цен из XLS min-max; только датированные справочные цены. Остатки, закупочные цены, маржа и сырой файл не публиковались."
-  ],
   "price_freshness_hours": 24,
   "stock_freshness_minutes": 60,
+  "price_policy": {
+    "price_type": "Оптовая, RUB",
+    "audience": "club_card",
+    "description": "Только по клубной карте Паллеты"
+  },
+  "last_reference_import": {
+    "as_of": "2026-10-17T19:06:32+03:00",
+    "updated_prices": 1,
+    "online_stock_confirmed": false
+  },
   "products": [
     {
       "id": "chicken_fillet",
       "ingredient": "chicken",
       "name": "Филе куриное (Куриная лавка)",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -37,22 +25,15 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
       "sold_in_palleta": false,
-      "purchase_channel": "outside_store",
       "price_type": null,
-      "price_audience": null,
-      "assortment_status": "not_sold_in_palleta",
-      "assortment_note": "Мясо не продаётся в Паллете; только домашний запас или специализированный магазин."
+      "price_audience": null
     },
     {
       "id": "beef_mince",
       "ingredient": "mince",
       "name": "Фарш говяжий",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -60,22 +41,15 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
       "sold_in_palleta": false,
-      "purchase_channel": "outside_store",
       "price_type": null,
-      "price_audience": null,
-      "assortment_status": "not_sold_in_palleta",
-      "assortment_note": "Мясо не продаётся в Паллете; только домашний запас или специализированный магазин."
+      "price_audience": null
     },
     {
       "id": "pollock",
       "ingredient": "fish",
       "name": "Минтай б/г 25+",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -83,17 +57,15 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
-      "sold_in_palleta": true
+      "sold_in_palleta": true,
+      "price_type": null,
+      "price_audience": null
     },
     {
       "id": "mistral_rice_900",
       "ingredient": "rice",
       "name": "Рис Мистраль Янтарь пропаренный, 900 г",
-      "sku_code": "1079",
       "unit": "кг",
       "pack_size": 0.9,
       "pricing_mode": "by_pack",
@@ -101,48 +73,31 @@
       "price_as_of": "2026-10-14",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
-      "article": "10213",
-      "sku_code_status": "verified_report",
-      "ut_report_code": "УТ-00001079",
-      "ut_report_code_status": "visible_in_inventory_report_header_truncated_not_search_code_verified",
-      "sku_code_source": "1C_UT11_report_Nomenclature_Code_for_search_2026-10-13",
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
-      "barcode": "4601916000564",
-      "internal_code": "УТ-00001079",
-      "identity_key": "УТ-00001079|1079",
-      "identity_source": "paired_UT_stock_and_minmax_audit_2026-10-13",
-      "price_source_system": "1C_UT_11_minmax_email_report",
-      "price_snapshot_time": "2026-10-14T15:20:11+03:00",
       "sold_in_palleta": true
     },
     {
       "id": "makfa_flour_2000",
       "ingredient": "flour",
       "name": "Мука Makfa, 2 кг",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 2,
       "pricing_mode": "by_pack",
-      "price": 109.9,
-      "price_as_of": "2026-10-05",
-      "price_source": "working_retail",
+      "price": null,
+      "price_as_of": null,
+      "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
-      "sold_in_palleta": true
+      "sold_in_palleta": true,
+      "price_type": null,
+      "price_audience": null
     },
     {
       "id": "uvelka_lentil_450",
       "ingredient": "lentil",
       "name": "Чечевица красная Увелка, 450 г",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.45,
       "pricing_mode": "by_pack",
@@ -150,17 +105,15 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
-      "sold_in_palleta": true
+      "sold_in_palleta": true,
+      "price_type": null,
+      "price_audience": null
     },
     {
       "id": "makfa_noodles_500",
       "ingredient": "noodles",
       "name": "Макфа макароны длинные, 500 г",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.5,
       "pricing_mode": "by_pack",
@@ -168,17 +121,15 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
-      "sold_in_palleta": true
+      "sold_in_palleta": true,
+      "price_type": null,
+      "price_audience": null
     },
     {
       "id": "eggs_co_10",
       "ingredient": "eggs",
       "name": "Яйца СО, 10 шт.",
-      "sku_code": null,
       "unit": "шт",
       "pack_size": 10,
       "pricing_mode": "by_pack",
@@ -186,21 +137,15 @@
       "price_as_of": "2026-10-13",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
-      "price_source_system": "minmax_UT11_13_10_2026",
-      "price_matching_internal_code": "УТ-00003355",
       "sold_in_palleta": true
     },
     {
       "id": "darman_milk_1l",
       "ingredient": "milk",
       "name": "Молоко Дарман 3,2%, 1 л",
-      "sku_code": null,
       "unit": "л",
       "pack_size": 1,
       "pricing_mode": "by_pack",
@@ -208,39 +153,31 @@
       "price_as_of": "2026-10-13",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
-      "price_source_system": "minmax_UT11_13_10_2026",
-      "price_matching_internal_code": "УТ-00001428",
       "sold_in_palleta": true
     },
     {
       "id": "vkus_milk_950",
       "ingredient": "milk",
       "name": "Молоко Вкуснотеево 3,2%, 950 г",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.95,
       "pricing_mode": "by_pack",
-      "price": 109.9,
-      "price_as_of": "2026-10-05",
-      "price_source": "working_retail",
+      "price": null,
+      "price_as_of": null,
+      "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": false,
-      "sold_in_palleta": true
+      "sold_in_palleta": true,
+      "price_type": null,
+      "price_audience": null
     },
     {
       "id": "darman_cottage_200",
       "ingredient": "cottage",
       "name": "Творог Дарман 9%, 200 г",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.2,
       "pricing_mode": "by_pack",
@@ -248,17 +185,15 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
-      "sold_in_palleta": true
+      "sold_in_palleta": true,
+      "price_type": null,
+      "price_audience": null
     },
     {
       "id": "zlato_oil_1l",
       "ingredient": "oil",
       "name": "Масло подсолнечное Злато, 1 л",
-      "sku_code": null,
       "unit": "л",
       "pack_size": 1,
       "pricing_mode": "by_pack",
@@ -266,21 +201,15 @@
       "price_as_of": "2026-10-13",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
-      "price_source_system": "minmax_UT11_13_10_2026",
-      "price_matching_internal_code": "УТ-00001276",
       "sold_in_palleta": true
     },
     {
       "id": "tsar_oil_1l",
       "ingredient": "oil",
       "name": "Масло подсолнечное «Царь», 1 л",
-      "sku_code": null,
       "unit": "л",
       "pack_size": 1,
       "pricing_mode": "by_pack",
@@ -288,17 +217,15 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "catalog",
       "compatible_with_recipe": true,
-      "sold_in_palleta": true
+      "sold_in_palleta": true,
+      "price_type": null,
+      "price_audience": null
     },
     {
       "id": "potato",
       "ingredient": "potato",
       "name": "Картофель",
-      "sku_code": "3202",
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -306,29 +233,15 @@
       "price_as_of": "2026-10-17",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "historical",
       "compatible_with_recipe": true,
-      "ut_report_code": "УТ-00003202",
-      "ut_report_code_status": "visible_in_inventory_report_and_matches_existing_sku_code",
-      "legacy_sku_code": "УТ-00003202",
-      "sku_code_source": "1C_UT11_report_Nomenclature_Code_for_search_2026-10-13",
-      "sku_code_status": "verified_report",
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
-      "internal_code": "УТ-00003202",
-      "identity_key": "УТ-00003202|3202",
-      "identity_source": "paired_UT_stock_and_minmax_audit_2026-10-13",
-      "price_source_system": "1C_UT_11_minmax_email_verified",
-      "price_snapshot_time": "2026-10-17T19:06:32+03:00",
       "sold_in_palleta": true
     },
     {
       "id": "onion",
       "ingredient": "onion",
       "name": "Лук репчатый",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -336,24 +249,15 @@
       "price_as_of": "2026-10-14",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "historical",
       "compatible_with_recipe": true,
-      "legacy_sku_code": "УТ-00001185",
-      "sku_code_status": "pending_verification_code_for_search",
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
-      "price_source_system": "1C_UT_11_minmax_email_verified",
-      "price_matching_internal_code": "УТ-00001185",
-      "price_snapshot_time": "2026-10-14T20:52:52+03:00",
       "sold_in_palleta": true
     },
     {
       "id": "carrot",
       "ingredient": "carrot",
       "name": "Морковь",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -361,24 +265,15 @@
       "price_as_of": "2026-10-14",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "historical",
       "compatible_with_recipe": true,
-      "legacy_sku_code": "УТ-00001447",
-      "sku_code_status": "pending_verification_code_for_search",
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
-      "price_source_system": "1C_UT_11_minmax_email_verified",
-      "price_matching_internal_code": "УТ-00001447",
-      "price_snapshot_time": "2026-10-14T20:52:52+03:00",
       "sold_in_palleta": true
     },
     {
       "id": "tomato",
       "ingredient": "tomato",
       "name": "Помидоры Новичок",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -386,24 +281,15 @@
       "price_as_of": "2026-10-14",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "historical",
       "compatible_with_recipe": true,
-      "legacy_sku_code": "УТ-00020184",
-      "sku_code_status": "pending_verification_code_for_search",
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
-      "price_snapshot_time": "2026-10-14T20:52:52+03:00",
-      "price_source_system": "1C_UT_11_minmax_email_verified",
-      "price_matching_internal_code": "УТ-00020184",
       "sold_in_palleta": true
     },
     {
       "id": "pepper",
       "ingredient": "pepper",
       "name": "Перец зелёный болгарский",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -411,24 +297,15 @@
       "price_as_of": "2026-10-14",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "historical",
       "compatible_with_recipe": true,
-      "legacy_sku_code": "УТ-00001729",
-      "sku_code_status": "pending_verification_code_for_search",
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
-      "price_source_system": "1C_UT_11_minmax_email_verified",
-      "price_matching_internal_code": "УТ-00001729",
-      "price_snapshot_time": "2026-10-14T20:52:52+03:00",
       "sold_in_palleta": true
     },
     {
       "id": "zucchini",
       "ingredient": "zucchini",
       "name": "Кабачки",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -436,24 +313,15 @@
       "price_as_of": "2026-10-14",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "historical",
       "compatible_with_recipe": true,
-      "legacy_sku_code": "УТ-00000753",
-      "sku_code_status": "pending_verification_code_for_search",
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
-      "price_source_system": "1C_UT_11_minmax_email_verified",
-      "price_matching_internal_code": "УТ-00000753",
-      "price_snapshot_time": "2026-10-14T20:52:52+03:00",
       "sold_in_palleta": true
     },
     {
       "id": "pumpkin",
       "ingredient": "pumpkin",
       "name": "Тыква",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -461,40 +329,26 @@
       "price_as_of": "2026-10-14",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "historical",
       "compatible_with_recipe": true,
-      "legacy_sku_code": "УТ-00007197",
-      "sku_code_status": "pending_verification_code_for_search",
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
-      "price_source_system": "1C_UT_11_minmax_email_verified",
-      "price_matching_internal_code": "УТ-00007197",
-      "price_snapshot_time": "2026-10-14T20:52:52+03:00",
       "sold_in_palleta": true
     },
     {
       "id": "dill",
       "ingredient": "greens",
       "name": "Укроп",
-      "sku_code": null,
       "unit": "пучок",
       "pack_size": 1,
       "pricing_mode": "by_pack",
-      "price": 36.0163551402,
-      "price_as_of": "2026-09-24",
-      "price_source": "historical_average",
+      "price": null,
+      "price_as_of": null,
+      "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "historical",
       "compatible_with_recipe": true,
-      "legacy_sku_code": "УТ-00002606",
-      "sku_code_status": "pending_verification_code_for_search",
       "sold_in_palleta": true,
-      "source_group": "Рынок 2",
-      "assortment_note": "Учётная позиция из группы «Рынок 2»; дата отчёта не является онлайн-наличием, упаковка «шт»/«пучок» требует проверки."
+      "price_type": null,
+      "price_audience": null
     },
     {
       "id": "eggs_s1_30",
@@ -504,19 +358,12 @@
       "pack_size": 30,
       "pricing_mode": "by_pack",
       "price": 319.97,
-      "price_matching_internal_code": "УТ-00011038",
-      "sku_code": null,
       "price_source": "manual_club_snapshot",
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
       "price_as_of": "2026-10-13",
-      "price_source_system": "minmax_UT11_13_10_2026",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "minmax_exact_product_2026_10_13",
       "compatible_with_recipe": true,
-      "sku_code_status": "pending_review_not_live",
       "sold_in_palleta": true
     },
     {
@@ -527,19 +374,12 @@
       "pack_size": 0.9,
       "pricing_mode": "by_pack",
       "price": 99.97,
-      "price_matching_internal_code": "УТ-00002109",
-      "sku_code": null,
       "price_source": "manual_club_snapshot",
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
       "price_as_of": "2026-10-13",
-      "price_source_system": "minmax_UT11_13_10_2026",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "minmax_exact_product_2026_10_13",
       "compatible_with_recipe": true,
-      "sku_code_status": "pending_review_not_live",
       "sold_in_palleta": true
     },
     {
@@ -550,51 +390,34 @@
       "pack_size": 2,
       "pricing_mode": "by_pack",
       "price": 99.97,
-      "price_matching_internal_code": "УТ-00013785",
-      "sku_code": null,
       "price_source": "manual_club_snapshot",
       "price_type": "Оптовая, RUB",
       "price_audience": "club_card",
       "price_as_of": "2026-10-13",
-      "price_source_system": "minmax_UT11_13_10_2026",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "minmax_exact_product_2026_10_13",
       "compatible_with_recipe": true,
-      "sku_code_status": "pending_review_not_live",
       "sold_in_palleta": true
     },
     {
       "id": "palleta_chicken_fillet",
       "ingredient": "chicken",
       "name": "Куриное филе СП Паллета",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
       "price": null,
       "price_as_of": null,
       "price_source": null,
-      "price_matching_internal_code": "УТ-00001108",
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "UT_identity_review_2026_10_13",
       "compatible_with_recipe": true,
-      "sku_code_status": "pending_review_not_live",
       "sold_in_palleta": false,
-      "purchase_channel": "outside_store",
       "price_type": null,
-      "price_audience": null,
-      "assortment_status": "not_sold_in_palleta",
-      "assortment_note": "Мясо не продаётся в Паллете; только домашний запас или специализированный магазин."
+      "price_audience": null
     },
     {
       "id": "chicken_breast",
       "ingredient": "chicken",
       "name": "Куриная грудка без кости (вместо филе)",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -602,15 +425,8 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "owner_substitution_2026_10_14",
       "compatible_with_recipe": true,
-      "sku_code_status": "pending_validation_no_live_prices",
-      "assortment_status": "not_sold_in_palleta",
-      "assortment_note": "Мясо не продаётся в Паллете; только домашний запас или специализированный магазин.",
       "sold_in_palleta": false,
-      "purchase_channel": "outside_store",
       "price_type": null,
       "price_audience": null
     },
@@ -618,7 +434,6 @@
       "id": "hake_fish",
       "ingredient": "fish",
       "name": "Хек (белая рыба)",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -626,21 +441,15 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "minmax_2026_10_13_exact_name",
       "compatible_with_recipe": true,
-      "sku_code_status": "pending_validation_no_live_prices",
-      "price_matching_internal_code": "УТ-00014307",
-      "assortment_status": "seen_in_minmax_report",
-      "assortment_note": "Название «Хек Рыба» найдено в min-max; цена за единицу и наличие не подтверждены для сайта.",
-      "sold_in_palleta": true
+      "sold_in_palleta": true,
+      "price_type": null,
+      "price_audience": null
     },
     {
       "id": "chicken_offal",
       "ingredient": "offal",
       "name": "Куриные потроха",
-      "sku_code": null,
       "unit": "кг",
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
@@ -648,16 +457,8 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "source": "minmax_2026_10_13_exact_name",
       "compatible_with_recipe": true,
-      "sku_code_status": "pending_validation_no_live_prices",
-      "price_matching_internal_code": "УТ-00001113",
-      "assortment_status": "not_sold_in_palleta",
-      "assortment_note": "Мясо не продаётся в Паллете; только домашний запас или специализированный магазин.",
       "sold_in_palleta": false,
-      "purchase_channel": "outside_store",
       "price_type": null,
       "price_audience": null
     },
@@ -665,7 +466,6 @@
       "id": "parsley",
       "ingredient": "greens",
       "name": "Петрушка",
-      "sku_code": null,
       "unit": "пучок",
       "pack_size": 1,
       "pricing_mode": "by_pack",
@@ -673,21 +473,15 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "price_matching_internal_code": "УТ-00001755",
-      "source": "minmax_2026_10_13_exact_name",
       "compatible_with_recipe": true,
-      "sku_code_status": "unit_шт_vs_пучок_requires_confirmation",
-      "assortment_note": "Учётная позиция из группы «Рынок 2»; дата отчёта не является онлайн-наличием, упаковка «шт»/«пучок» требует проверки.",
       "sold_in_palleta": true,
-      "source_group": "Рынок 2"
+      "price_type": null,
+      "price_audience": null
     },
     {
       "id": "cilantro",
       "ingredient": "greens",
       "name": "Кинза",
-      "sku_code": null,
       "unit": "пучок",
       "pack_size": 1,
       "pricing_mode": "by_pack",
@@ -695,15 +489,10 @@
       "price_as_of": null,
       "price_source": null,
       "availability": "unknown",
-      "availability_checked_at": null,
-      "stock_quantity": null,
-      "price_matching_internal_code": "УТ-00000846",
-      "source": "minmax_2026_10_13_exact_name",
       "compatible_with_recipe": true,
-      "sku_code_status": "unit_шт_vs_пучок_requires_confirmation",
-      "assortment_note": "Учётная позиция из группы «Рынок 2»; дата отчёта не является онлайн-наличием, упаковка «шт»/«пучок» требует проверки.",
       "sold_in_palleta": true,
-      "source_group": "Рынок 2"
+      "price_type": null,
+      "price_audience": null
     }
   ],
   "ingredients": [
@@ -716,11 +505,7 @@
         "palleta_chicken_fillet",
         "chicken_breast"
       ],
-      "substitution_hint": "Куриная грудка без кости подходит для большинства блюд с филе. Потроха лучше выбрать как отдельное блюдо: способы приготовления отличаются.",
-      "sold_in_palleta": false,
-      "source_group": null,
-      "purchase_channel": "outside_store",
-      "assortment_note": "Мясо не продаётся в Паллете: используется из домашнего запаса или приобретается в специализированном магазине."
+      "sold_in_palleta": false
     },
     {
       "id": "mince",
@@ -729,11 +514,7 @@
       "product_ids": [
         "beef_mince"
       ],
-      "substitution_hint": "Другой говяжий фарш той же категории; без автоматической замены состава",
-      "sold_in_palleta": false,
-      "source_group": null,
-      "purchase_channel": "outside_store",
-      "assortment_note": "Мясо не продаётся в Паллете: используется из домашнего запаса или приобретается в специализированном магазине."
+      "sold_in_palleta": false
     },
     {
       "id": "fish",
@@ -743,9 +524,7 @@
         "pollock",
         "hake_fish"
       ],
-      "substitution_hint": "Хек — альтернативная белая рыба. Замена возможна после проверки костей, вида разделки и фактической массы.",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "rice",
@@ -755,9 +534,7 @@
         "mistral_rice_900",
         "shams_rice_900"
       ],
-      "substitution_hint": "Шамс Янтарь 900 г — аналог по категории, упаковку и сорт проверить.",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "flour",
@@ -767,9 +544,7 @@
         "makfa_flour_2000",
         "snezhana_flour_2000"
       ],
-      "substitution_hint": "Снежана 2 кг — аналог, проверить сорт муки.",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "lentil",
@@ -778,9 +553,7 @@
       "product_ids": [
         "uvelka_lentil_450"
       ],
-      "substitution_hint": "Другая красная чечевица; горох только с заменой рецепта",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "noodles",
@@ -789,9 +562,7 @@
       "product_ids": [
         "makfa_noodles_500"
       ],
-      "substitution_hint": "Суповая лапша или вермишель подходящей фасовки",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "eggs",
@@ -801,9 +572,7 @@
         "eggs_s1_30",
         "eggs_co_10"
       ],
-      "substitution_hint": "С1 30 шт. — предпочтительно; СО 10 шт. — другой класс, ручная замена.",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "milk",
@@ -813,9 +582,7 @@
         "darman_milk_1l",
         "vkus_milk_950"
       ],
-      "substitution_hint": "Вкуснотеево 950 г: формат подтверждён, но пересчёт граммов в литры для рецепта требует проверки",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "cottage",
@@ -824,9 +591,7 @@
       "product_ids": [
         "darman_cottage_200"
       ],
-      "substitution_hint": "Творог близкой жирности с проверенной фасовкой",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "oil",
@@ -836,9 +601,7 @@
         "zlato_oil_1l",
         "tsar_oil_1l"
       ],
-      "substitution_hint": "Другие марки подсолнечного масла 1 л после сверки цены",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "potato",
@@ -847,9 +610,7 @@
       "product_ids": [
         "potato"
       ],
-      "substitution_hint": "При отсутствии картофеля лучше предложить другое блюдо",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "onion",
@@ -858,9 +619,7 @@
       "product_ids": [
         "onion"
       ],
-      "substitution_hint": "Другой сорт репчатого лука после проверки товара",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "carrot",
@@ -869,9 +628,7 @@
       "product_ids": [
         "carrot"
       ],
-      "substitution_hint": "При отсутствии моркови скорректировать рецепт вручную",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "tomato",
@@ -880,9 +637,7 @@
       "product_ids": [
         "tomato"
       ],
-      "substitution_hint": "Другой сорт свежих томатов после подтверждения SKU",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "pepper",
@@ -891,9 +646,7 @@
       "product_ids": [
         "pepper"
       ],
-      "substitution_hint": "Другой болгарский перец после подтверждения SKU",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "zucchini",
@@ -902,9 +655,7 @@
       "product_ids": [
         "zucchini"
       ],
-      "substitution_hint": "При отсутствии кабачков выбрать альтернативное блюдо",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "pumpkin",
@@ -913,9 +664,7 @@
       "product_ids": [
         "pumpkin"
       ],
-      "substitution_hint": "При отсутствии тыквы выбрать альтернативное блюдо",
-      "sold_in_palleta": true,
-      "source_group": null
+      "sold_in_palleta": true
     },
     {
       "id": "greens",
@@ -926,12 +675,7 @@
         "parsley",
         "cilantro"
       ],
-      "substitution_hint": "Укроп, петрушка и кинза представлены в группе «Рынок 2» УТ 11. Проверить фасовку и фактическое наличие при сборке.",
-      "assortment_confirmed_by_owner": true,
-      "assortment_note": "Группа «Рынок 2» в УТ 11; строки справочника и учётные остатки проверялись по датированному отчёту. Текущая доступность и соответствие «шт» ↔ «пучок» не подтверждены.",
-      "sold_in_palleta": true,
-      "source_group": "Рынок 2",
-      "assortment_source": "1C_UT11_Rynok_2_dated_report"
+      "sold_in_palleta": true
     },
     {
       "id": "offal",
@@ -940,23 +684,7 @@
       "product_ids": [
         "chicken_offal"
       ],
-      "substitution_hint": "Для потрохов используются отдельные рецепты; смешанные желудки, сердечки и печень готовятся разное время.",
-      "sold_in_palleta": false,
-      "source_group": null,
-      "purchase_channel": "outside_store",
-      "assortment_note": "Мясо не продаётся в Паллете: используется из домашнего запаса или приобретается в специализированном магазине."
+      "sold_in_palleta": false
     }
-  ],
-  "price_policy": {
-    "price_type": "Оптовая, RUB",
-    "audience": "club_card",
-    "description": "Только по клубной карте Паллеты"
-  },
-  "last_reference_import": {
-    "source": "minmax_verified_email",
-    "as_of": "2026-10-17T19:06:32+03:00",
-    "mode": "dated_club_price_only",
-    "updated_prices": 1,
-    "online_stock_confirmed": false
-  }
+  ]
 }

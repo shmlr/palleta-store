@@ -104,9 +104,9 @@ function basketText(result){
  let t=`Паллета. Заявка на проверку корзины\nКЛУБНЫЕ ЦЕНЫ: только по карте Паллеты.\n${prefs.days===3?'3 дня':'7 дней'}, завтрак / обед / ужин, на ${prefs.people} чел.\n`;
  for(const slot of result.slots)t+=`${C.DAYS[slot.day]} ${C.MEAL_NAMES[slot.meal]} (${slot.mode==='picnic'?'пикник':slot.people+' чел. дома'}): ${slot.recipe?slot.recipe.name:slot.reason||'НЕ ПОДОБРАНО'}\n`;
  t+='\nКупить в Паллете (предварительная заявка):\n';
- for(const it of result.basket.items){const ref=refClubCost(it);
+ for(const it of pendingBasketItems(result)){const ref=refClubCost(it);
   const qty=it.p.pricing_mode==='by_weight'?`${qfmt(it.quantity)} ${it.p.unit}`:`${it.packs} уп. по ${qfmt(it.p.pack_size)} ${it.p.unit}`;
-  t+=`• ${it.p.name} — ${qty}${it.p.sku_code?' [код '+it.p.sku_code+']':''}; наличие ${STATUS[it.stock]}; ${it.priceCurrent?'клубная стоимость '+money(it.cost):ref!==null?'справочная стоимость '+money(ref)+' по клубным ценам от '+humanDate(it.p.price_as_of):'клубная цена неизвестна'}\n`;
+  t+=`• ${it.p.name} — ${qty}; наличие ${STATUS[it.stock]}; ${it.priceCurrent?'клубная стоимость '+money(it.cost):ref!==null?'справочная стоимость '+money(ref)+' по клубным ценам от '+humanDate(it.p.price_as_of):'клубная цена неизвестна'}\n`;
  }
  if(result.basket.homeItems.length){
   t+='\nУже есть дома (не заказывать в Паллете):\n';
@@ -123,11 +123,12 @@ function basketText(result){
  t+='\nПожалуйста, проверьте цены, фактические остатки, возможные замены и условия доставки. Сумма не является подтверждённым заказом.';
  return t;
 }
+function pendingBasketItems(result){return result.basket.items.filter(it=>!checkedItems.has(it.p.id));}
 function whatsappOrderText(result){
  const lines=['Здравствуйте! Прошу проверить наличие и собрать продукты в «Паллете» по меню на неделю.',
   'Семья: '+prefs.people+' чел. · '+prefs.days+' дн. · '+result.filled+' блюд, '+result.skipped+' приёмов пищи без готовки дома.',
   'Список покупок:'];
- for(const it of result.basket.items){
+ for(const it of pendingBasketItems(result)){
   const quantity=it.p.pricing_mode==='by_weight'?qfmt(it.quantity)+' '+it.p.unit:it.packs+' уп. по '+qfmt(it.p.pack_size)+' '+it.p.unit;
   lines.push('• '+it.p.name+' — '+quantity);
  }
@@ -174,14 +175,14 @@ function renderResult(message=''){
  if(known.length){const estimate=known.reduce((sum,it)=>sum+refClubCost(it),0);h+=`<div class="note"><b>Справочная сумма по ${known.length} из ${b.items.length} позиций: ≈ ${money(estimate)}</b><p class="small">Только товары с известной клубной ценой на дату выгрузки. Это не полная стоимость корзины и не подтверждённый заказ.</p></div>`;}
  if(p.filled<p.activeSlots)h+=`<p class="error">${p.activeSlots-p.filled} блюд не подобрано: в каталоге нет подтверждённых подходящих сочетаний при ваших ограничениях.</p>`;
  if(prefs.budget){h+=`<p class="small">Бюджет: ${money(prefs.budget)}. ${currentConfirm?b.confirmedTotal<=prefs.budget?'Собранная корзина укладывается в бюджет по данным последней выгрузки.':'Внимание: корзина превышает выбранный бюджет.':'Проверка бюджета заблокирована неполными данными.'}</p>`;}
- h+='</div><div class="panel"><h2>Список покупок в Паллете <span class="pill" id="check-count">'+b.items.filter(x=>checkedItems.has(x.p.id)).length+' / '+b.items.length+' отмечено</span></h2><p class="muted">Отмечайте купленное. Галочки сохраняются на устройстве. Нажмите «Уже есть дома», чтобы убрать продукт из заявки. Значок ≈ — справочная цена.</p>';
+ h+='</div><div class="panel"><h2>Список покупок в Паллете <span class="pill" id="check-count">'+b.items.filter(x=>checkedItems.has(x.p.id)).length+' / '+b.items.length+' куплено</span></h2><p class="muted">Отметка «Куплено» исключает товар из WhatsApp-заявки и копируемого списка. «Уже есть дома» убирает ингредиент из расчёта корзины. Значок ≈ означает справочную цену.</p><p class="small" id="purchase-pending">В заявку: '+pendingBasketItems(lastPlan).length+' из '+b.items.length+' позиций.</p>';
  for(const it of b.items){const opts=(it.ing.product_ids||[]).map(id=>catalog.byProduct[id]).filter(x=>C.validProduct(x,it.ing)&&C.availability(x,catalog)!=='out_of_stock');
  const ref=refClubCost(it);
  h+=`<div class="product"><div class="product-head"><label class="check-row"><input class="shopping-check" type="checkbox" data-check="${esc(it.p.id)}" ${checkedItems.has(it.p.id)?'checked':''} aria-label="Куплено: ${esc(it.p.name)}"><span class="basket-name">${esc(it.ing.name)}</span></label><span class="amount">${it.priceCurrent?money(it.cost):ref!==null?'≈ '+money(ref):'цену уточнить'}</span></div>`;
  const qty=it.p.pricing_mode==='by_pack'?`${it.packs} уп. по ${qfmt(it.p.pack_size)} ${esc(it.p.unit)} · всего ${qfmt(it.quantity)} ${esc(it.p.unit)}`:`${qfmt(it.quantity)} ${esc(it.p.unit)}`;
- h+=`<p class="small">${esc(it.p.name)} · ${qty} · ${esc(STATUS[it.stock])}${it.p.sku_code?' · код '+esc(it.p.sku_code):''}</p>`;
+ h+=`<p class="small">${esc(it.p.name)} · ${qty} · ${esc(STATUS[it.stock])}</p>`;
  h+=`<label class="small home-checkbox"><input type="checkbox" data-home="${esc(it.ing.id)}"> Уже есть дома — убрать из заявки</label>`;
- if(it.ing.source_group==='Рынок 2')h+='<p class="small success">Учтена в группе «Рынок 2» УТ 11. Вид, фасовку и актуальное наличие уточнят при сборке.</p>';
+ 
  if(it.priceKnown&&!it.priceCurrent)h+=`<p class="small">Последняя известная клубная стоимость ${money(it.cost)} · не текущая цена</p>`;
  if(ref!==null&&!it.priceCurrent){h+=`<p class="small">Клубная цена на ${esc(humanDate(it.p.price_as_of))}: ${money(it.p.price)} за ${it.p.pricing_mode==='by_pack'?'упаковку':esc(it.p.unit)}. Справочно, не текущая цена.</p>`;}
  if(opts.length>1){h+=`<label class="small" for="select-${esc(it.ingredient)}">Заменить на аналог или другую фасовку</label><select id="select-${esc(it.ingredient)}" data-ingredient="${esc(it.ingredient)}">`;
@@ -212,13 +213,10 @@ function renderResult(message=''){
   }
   h+='</div>';
  }
- h+='<div class="panel"><h2>Какие SKU стоит проверить</h2><p class="small">Это рекомендации для сверки в 1С, а не утверждение, что товаров нет в магазине.</p>';
- const uncovered=catalog.ingredients.filter(i=>i.sold_in_palleta!==false&&i.source_group!=='Рынок 2'&&!(i.product_ids||[]).some(id=>{const pr=catalog.byProduct[id];return C.validProduct(pr,i)&&C.availability(pr,catalog)==='in_stock';}));
- const important=uncovered.slice(0,10);
- for(const i of important)h+=`<div class="product"><b>${esc(i.name)}</b><div class="small">${esc(i.substitution_hint||'Проверить подходящий SKU и актуальное наличие')}</div></div>`;
- h+='<p class="small">Идеи завтраков из публичного демо berbena.pro, ещё не сопоставленные с ассортиментом: овсяные хлопья, бананы, семена чиа, кокосовое молоко. Они не включены в заказ.</p></div>';
+
  h+='<button class="btn" id="copy">Скопировать меню и список продуктов</button><button class="btn secondary" id="share">Поделиться списком</button><button class="btn secondary" id="print">Распечатать или сохранить PDF</button><button class="btn secondary" id="clearchecks">Снять отметки с покупок</button><button class="btn secondary" id="shuffle">Другое сочетание блюд</button><button class="btn secondary" id="restart">Изменить условия</button>';
- h+='<div class="panel wa-section"><h2>Готово! Отправьте заявку в Паллету</h2><p class="small">В заявке только товары магазина, без мяса из домашних запасов. Магазин уточнит клубные цены, наличие и возможные замены.</p><a class="btn wa-link" id="whatsapp" href="'+esc(whatsappHref(lastPlan))+'" target="_blank" rel="noopener noreferrer">Отправить список в WhatsApp ↗</a><p class="small">Получатель: +7 988 204-00-01. WhatsApp откроет готовое сообщение: проверьте его и нажмите «Отправить». Без подтверждения магазина заказ ещё не оформлен.</p></div>';
+ const pending=pendingBasketItems(lastPlan);
+ h+='<div class="panel wa-section"><h2>Готово! Отправьте заявку в Паллету</h2><p class="small">В заявку входят только неотмеченные товары магазина. Магазин уточнит клубные цены, наличие и замены.</p><a class="btn wa-link" id="whatsapp" '+(pending.length?'href="'+esc(whatsappHref(lastPlan))+'"':'aria-disabled="true"')+' target="_blank" rel="noopener noreferrer">'+(pending.length?'Отправить список в WhatsApp ↗':'Все товары отмечены как купленные')+'</a><p class="small">Получатель: +7 988 204-00-01. Проверьте сообщение перед отправкой. Без подтверждения магазина заказ ещё не оформлен.</p></div>';
 h+='<section class="panel" id="berbena-recipes-referral"><h2>Ещё идеи для семейного меню</h2><p>В PROРЕЦЕПТАХ на berbena.pro — отдельная библиотека из 120 рецептов, план дня и настройка порций. Доступ 590 ₽, без подписки.</p><a class="btn secondary" href="'+esc(berbenaHref('menu_result'))+'" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none">Посмотреть PROРЕЦЕПТЫ на berbena.pro ↗</a><p class="small">Это другая библиотека. Ссылка не гарантирует наличие выбранного блюда на berbena.pro.</p></section>';
 if(prefs.time<90)h+='<p class="small">Для блюд из куриных потрохов выберите «Без ограничения» по времени: им требуется больше времени, чем куриному филе.</p>';
 h+='<p class="muted">* Соль, вода и специи для многих рецептов не включены в продуктовую корзину; порции носят редакционный характер. Аллергенная безопасность не проверена, фильтры не заменяют изучение состава товара.</p>';
@@ -248,7 +246,10 @@ h+='<p class="muted">* Соль, вода и специи для многих р
   if(el.checked)checkedItems.add(el.dataset.check);else checkedItems.delete(el.dataset.check);
   saveState();
   const count=document.getElementById('check-count');
-  if(count)count.textContent=b.items.filter(x=>checkedItems.has(x.p.id)).length+' / '+b.items.length+' отмечено';
+  if(count)count.textContent=b.items.filter(x=>checkedItems.has(x.p.id)).length+' / '+b.items.length+' куплено';
+  const pending=pendingBasketItems(lastPlan),wa=document.getElementById('whatsapp'),note=document.getElementById('purchase-pending');
+  if(note)note.textContent='В заявку: '+pending.length+' из '+b.items.length+' позиций.';
+  if(wa){if(pending.length){wa.setAttribute('href',whatsappHref(lastPlan));wa.removeAttribute('aria-disabled');wa.textContent='Отправить список в WhatsApp ↗';}else{wa.removeAttribute('href');wa.setAttribute('aria-disabled','true');wa.textContent='Все товары отмечены как купленные';}}
  });
  $.querySelectorAll('[data-slot]').forEach(sel=>sel.onchange=()=>{if(!sel.value)return;const orig=fixed[sel.dataset.slot];fixed[sel.dataset.slot]=sel.value;const check=C.plan(catalog,recipes,prefs,{seed,fixed,selected:chosen,atHome:[...homeIngredients]});
   const target=check.slots.find(s=>s.key===sel.dataset.slot);

@@ -5,6 +5,8 @@ No 1C exports, secrets, .github workflows, CI logs, or unapproved files.
 """
 import argparse
 import io
+import json
+from public_catalog import project_public
 import cairosvg
 import re
 import shutil
@@ -55,6 +57,11 @@ def main():
     (dest / "assets").mkdir(parents=True)
     for item in PUBLIC_FILES:
         shutil.copy2(src / item, dest / item)
+    # Never publish the source catalog verbatim: it also contains reviewed
+    # 1C identity fields used by the guarded importer.
+    public_json = dest / "products.json"
+    public_data = project_public(json.loads(public_json.read_text(encoding="utf-8")))
+    public_json.write_text(json.dumps(public_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     for item in (src / "assets").iterdir():
         if item.is_file() and not item.is_symlink() and item.suffix.lower() in IMAGE_EXTS:
             shutil.copy2(item, dest / "assets" / item.name)
