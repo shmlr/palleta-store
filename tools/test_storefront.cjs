@@ -14,6 +14,12 @@ assert(html.includes('tel:+79882040001'),'correct store phone');
 assert(!html.includes('79882040000'),'wrong old phone');
 assert(!html.includes('—'),'no em dash');
 assert(!html.includes('Онлайн-каталог'),'catalog not misrepresented');
+assert(html.includes('href="https://t.me/PALLETA01"'),'official Palleta Telegram');
+assert(html.includes('href="https://max.ru/u/f9LHodD0cOKYEWc4RJmLceBHb6KkAUR8mcx2h9XsGQ9ywbv4rfaQWYUG5AY"'),'official Palleta MAX');
+assert(html.includes('id="other-projects"'),'other projects separate section');
+assert(html.includes('https://berbena.pro/prorecepty?utm_source=palleta_store'),'verified berbena landing page');
+assert(html.includes('href="https://wa.me/79637940001?text='),'LP WA message separate from store');
+assert(!html.includes('https://t.me/+79882040001'),'outdated Telegram removed');
 (async()=>{const browser=await chromium.launch({executablePath:process.env.CHROME_BIN||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 try{
  for(const width of [320,360,390,768,1024,1440]){
@@ -27,6 +33,26 @@ try{
   assert.equal(await page.locator('.panel-cta').getAttribute('href'),'menu/start.html');
   const menu=await page.request.get('http://127.0.0.1:8877/menu/start.html');assert(menu.ok(),'connected menu');
   assert.equal(await page.locator('.hero-benefits>div').count(),5);
+  const contacts=page.locator('#contacts');
+  const related=page.locator('#other-projects');
+  assert.equal(await contacts.locator('.contact-link').count(),3,'store socials have 3 links');
+  assert.equal(await related.locator('.related-project-card').count(),2,'two other projects');
+  assert.equal(await related.locator('a[href*="berbena.pro/prorecepty"]').count(),1);
+  const lp=related.locator('a[href^="https://wa.me/79637940001"]');
+  assert.equal(await lp.count(),1);
+  assert.equal(await related.locator('a[href^="tel:"]').count(),0,'no confusing partner contact numbers');
+  assert.equal(await contacts.locator('a[href^="https://wa.me/79637940001"]').count(),0,'LP contact not mixed in store');
+  assert.equal(await contacts.locator('a[href="https://t.me/PALLETA01"]').count(),1);
+  assert.equal(await contacts.locator('a[href="https://max.ru/u/f9LHodD0cOKYEWc4RJmLceBHb6KkAUR8mcx2h9XsGQ9ywbv4rfaQWYUG5AY"]').count(),1);
+  await related.scrollIntoViewIfNeeded();
+  await related.locator('img[alt="Логотип Local Point"]').evaluate(img=>img.decode());
+  assert(await related.locator('img[alt="Логотип Local Point"]').evaluate(x=>x.complete&&x.naturalWidth>0),'real LP logo loads after scroll');
+  assert(await page.evaluate(()=>document.querySelector('#contacts').compareDocumentPosition(document.querySelector('#other-projects'))&Node.DOCUMENT_POSITION_FOLLOWING),'other projects come after store contact block');
+  if(width<=390){
+    await related.scrollIntoViewIfNeeded();
+    await page.screenshot({path:'/tmp/palleta-other-projects-'+width+'.png'});
+    assert(await related.locator('.related-project-card').first().isVisible());
+  }
   const header=page.locator('.header');
   const toggle=page.locator('.header-menu-button');
   const nav=page.locator('#header-navigation');
