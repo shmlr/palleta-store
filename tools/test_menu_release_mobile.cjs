@@ -3,12 +3,16 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const {chromium}=require('playwright-core');
 const base=process.env.TEST_URL||'http://127.0.0.1:8877/';
-const sourceSHA='05bf883e917a52071febf00bc2c8368da9fe7925';
+const sourceSHA='724f52ffa773ef9d7fdacd3960802b5eed2fa702';
 const html=fs.readFileSync('menu/start.html','utf8');
 const app=fs.readFileSync('menu/app.js','utf8');
 const publicCatalog=JSON.parse(fs.readFileSync('menu/products.json','utf8'));
 assert(!('source_notes' in publicCatalog),'1C source notes not published');
 assert(publicCatalog.products.every(p=>p.availability==='unknown'&&!('internal_code' in p)&&!('stock_quantity' in p)&&!('sku_code' in p)),'no internal identity or warehouse counts in public JSON');
+const potato=publicCatalog.products.find(p=>p.id==='potato');
+assert(potato&&potato.price===49.96&&potato.price_as_of==='2026-10-20','dated club reference from reviewed 1C report');
+assert.equal(publicCatalog.last_reference_import.as_of,'2026-10-20T19:06:43+03:00');
+assert(publicCatalog.last_reference_import.online_stock_confirmed===false,'no warehouse stock published');
 
 const release=fs.readFileSync('menu/RELEASE.txt','utf8');
 assert(release.includes(sourceSHA));

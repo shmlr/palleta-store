@@ -9,7 +9,7 @@
     "description": "Только по клубной карте Паллеты"
   },
   "last_reference_import": {
-    "as_of": "2026-10-17T19:06:32+03:00",
+    "as_of": "2026-10-20T19:06:43+03:00",
     "updated_prices": 1,
     "online_stock_confirmed": false
   },
@@ -230,7 +230,7 @@
       "pack_size": 0.1,
       "pricing_mode": "by_weight",
       "price": 49.96,
-      "price_as_of": "2026-10-17",
+      "price_as_of": "2026-10-20",
       "price_source": "manual_club_snapshot",
       "availability": "unknown",
       "compatible_with_recipe": true,
