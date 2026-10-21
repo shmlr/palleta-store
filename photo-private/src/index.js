@@ -1,4 +1,5 @@
 import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { sameOrigin, imageType, isId } from './validation.js';
 
 const MAX_IMAGE_BYTES = 6 * 1024 * 1024;
 const CATEGORIES = new Set(['front', 'back', 'detail', 'weight']);
@@ -46,22 +47,6 @@ async function authenticated(request, env) {
   } catch {
     return null;
   }
-}
-
-function sameOrigin(request) {
-  const origin = request.headers.get('origin');
-  return origin && origin === new URL(request.url).origin;
-}
-
-function imageType(bytes) {
-  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return 'image/jpeg';
-  if (bytes.length >= 8 && [137,80,78,71,13,10,26,10].every((v,i) => bytes[i] === v)) return 'image/png';
-  if (bytes.length >= 12 && String.fromCharCode(...bytes.slice(0,4)) === 'RIFF' && String.fromCharCode(...bytes.slice(8,12)) === 'WEBP') return 'image/webp';
-  return null;
-}
-
-function isId(id) {
-  return /^[0-9a-f]{8}-[0-9a-f-]{27,36}$/i.test(id);
 }
 
 async function readRecord(bucket, id) {
