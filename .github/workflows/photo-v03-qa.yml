@@ -1,0 +1,29 @@
+name: Palleta Photo v0.3 read-only checks
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'photo-private/**'
+      - '.github/workflows/photo-v03-qa.yml'
+permissions:
+  contents: read
+jobs:
+  test-photo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate source
+        working-directory: photo-private
+        run: |
+          node --check src/index.js
+          node --check src/validation.js
+          node --check public/app.js
+          node -e "JSON.parse(require('fs').readFileSync('wrangler.jsonc'))"
+          node -e "JSON.parse(require('fs').readFileSync('public/manifest.webmanifest'))"
+      - name: Run unit tests
+        working-directory: photo-private
+        run: npm test
