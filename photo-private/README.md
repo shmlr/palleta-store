@@ -51,3 +51,22 @@
 ## Проверенные внешние интерфейсы
 
 Документация Cloudflare: Workers Static Assets, Worker Cloudflare Access, R2 bindings. Тестов на реальном аккаунте Cloudflare пока нет.
+
+## GitHub Actions: подготовленный запуск
+
+Файл `.github/workflows/photo-v03-manual-deploy.yml` выполняет развёртывание только по ручному `workflow_dispatch`, не по обычному коммиту. После принятия PR он появится в Actions.
+
+**Сначала** в Cloudflare настройте Zero Trust и Access для `palleta-photo-private` с допуском только конкретных email сотрудников и проверяющих. Включите защиту **всего Worker**, в том числе `workers.dev` и preview, см. https://developers.cloudflare.com/workers/configuration/cloudflare-access/.
+
+GitHub → Settings → Secrets and variables → Actions: добавьте 5 Repository secrets:
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN` с минимально нужными правами на Workers и Workers R2 Storage Write
+- `PHOTO_TEAM_DOMAIN` (например, `your-team.cloudflareaccess.com`)
+- `PHOTO_POLICY_AUD` (AUD настроенного приложения Access)
+- `PHOTO_REVIEWER_EMAILS` (список email проверяющих через запятую)
+
+Не сообщайте токены и секретные значения в чате, issue, PR или исходном коде. Сначала запустить тесты PR, затем согласовать слияние, затем запустить действие **Palleta Photo private deployment (manual only)**. Оно создаёт R2 bucket, если отсутствует, развёртывает Worker и задаёт секреты авторизации. После запуска проверить запрет доступа без входа, отправку с телефона, получение фотографий проверяющим и отсутствие изменений на публичном сайте.
+
+Если Cloudflare R2 не включён, требуется разрешить его использование в вашем Cloudflare-аккаунте; возможны расходы согласно тарифу. Приложение не создаёт общедоступную ссылку на R2 bucket.
+
+**До окончания этой настройки и реального теста v0.3 НЕ считается подключённой.**
