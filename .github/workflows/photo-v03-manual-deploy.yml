@@ -1,0 +1,58 @@
+name: Palleta Photo private deployment (manual only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    name: Deploy private photo Worker and R2 binding
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PHOTO_TEAM_DOMAIN: ${{ secrets.PHOTO_TEAM_DOMAIN }}
+      PHOTO_POLICY_AUD: ${{ secrets.PHOTO_POLICY_AUD }}
+      PHOTO_REVIEWER_EMAILS: ${{ secrets.PHOTO_REVIEWER_EMAILS }}
+    defaults:
+      run:
+        working-directory: photo-private
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check required secrets (without printing them)
+        shell: bash
+        run: |
+          for var in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID PHOTO_TEAM_DOMAIN PHOTO_POLICY_AUD PHOTO_REVIEWER_EMAILS; do
+            if [ -z "${!var}" ]; then
+              echo "::error::Required GitHub secret is missing: ${var}"
+              exit 1
+            fi
+          done
+      - name: Install and verify code
+        run: |
+          npm install --no-audit --no-fund
+          npm run check
+          npm test
+          node --check public/app.js
+      - name: Create private R2 bucket if missing
+        shell: bash
+        run: |
+          npx wrangler r2 bucket list > /tmp/palleta-photo-buckets.txt
+          if ! grep -q 'palleta-photo-private' /tmp/palleta-photo-buckets.txt; then
+            npx wrangler r2 bucket create palleta-photo-private
+          fi
+      - name: Deploy fail-closed Worker
+        run: npx wrangler deploy
+      - name: Configure Worker authentication secrets
+        shell: bash
+        run: |
+          printf '%s' "$PHOTO_TEAM_DOMAIN" | npx wrangler secret put TEAM_DOMAIN
+          printf '%s' "$PHOTO_POLICY_AUD" | npx wrangler secret put POLICY_AUD
+          printf '%s' "$PHOTO_REVIEWER_EMAILS" | npx wrangler secret put REVIEWER_EMAILS
+      - name: Reminder about Access policy
+        run: |
+          echo "::notice::Cloudflare Access must be enabled for all Worker traffic and restricted to approved staff."
+          echo "::notice::Workers.dev and preview URLs also require protection. Application is fail-closed without a valid Access JWT."
