@@ -1,0 +1,34 @@
+name: Palleta Purchase Flow Audit (read only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/audit_purchase_flow.cjs'
+      - 'docs/PURCHASE_FLOW_AUDIT.md'
+      - '.github/workflows/purchase-flow-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser driver
+        run: npm install --no-save --ignore-scripts playwright-core@1.56.1
+      - name: Run read-only purchase flow audit in real Chromium
+        run: |
+          python3 -m http.server 8877 --bind 127.0.0.1 >/tmp/palleta-audit-http.log 2>&1 &
+          node tools/audit_purchase_flow.cjs
+      - name: Upload audit evidence, findings and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: purchase-flow-audit
+          path: /tmp/palleta-purchase-flow-audit/
+          retention-days: 14
+          if-no-files-found: error
