@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#254A74">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>Паллета Фото · закрытый пилот</title>
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="/style.css">
+<script src="/app.js" defer></script>
+</head>
+<body>
+<header class="top">
+ <div class="shell header">
+  <div class="brand"><div class="brand-icon" aria-hidden="true">▣</div><div><strong>Паллета Фото</strong><small>Закрытый каталог</small></div></div>
+  <span id="identity" class="identity">Проверка доступа…</span>
+ </div>
+</header>
+<main class="shell" id="main">
+ <div id="notice" role="status" aria-live="polite"></div>
+ <section class="intro"><h1>Фотографии товаров</h1><p>Снимайте товары в зале. Ответственный проверит фотографию в общей очереди.</p></section>
+ <nav class="tabs" aria-label="Разделы">
+  <button id="tabNew" class="active" data-tab="new" type="button">Снять товар</button>
+  <button id="tabQueue" data-tab="queue" type="button">Очередь <span id="count"></span></button>
+ </nav>
+ <section id="newPanel" class="panel">
+  <form id="photoForm" autocomplete="off">
+   <label for="sku">Код товара 1С или штрихкод <span>*</span></label>
+   <input id="sku" name="sku" maxlength="80" required placeholder="Сканируйте код или введите вручную">
+   <label for="product">Наименование товара <span>*</span></label>
+   <input id="product" name="product" maxlength="200" required placeholder="Например: Яблоки весовые">
+   <div class="split">
+    <div><label for="kind">Ракурс</label>
+     <select id="kind" name="kind"><option value="front">Главная</option><option value="back">Обратная сторона</option><option value="detail">Детали</option><option value="weight">Весовой товар</option></select></div>
+    <div><label for="notes">Комментарий</label><input id="notes" name="notes" maxlength="500" placeholder="Необязательно"></div>
+   </div>
+   <div class="photo-tools">
+    <button type="button" id="takePhoto" class="secondary">📷 Снять на телефон</button>
+    <button type="button" id="choosePhoto" class="secondary">Из галереи</button>
+   </div>
+   <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+   <input type="file" id="galleryInput" accept="image/*" hidden>
+   <div class="preview" id="previewBox"><span id="previewHint">Фотография ещё не выбрана</span><img id="previewImage" alt="Предпросмотр загруженной фотографии" hidden></div>
+   <p class="help">Для весовых овощей и фруктов снимите несколько экземпляров одного сорта. Белые поля автоматически добавляются, но фон зала не удаляется.</p>
+   <button id="submitPhoto" class="primary" type="submit" disabled>Отправить на проверку</button>
+  </form>
+ </section>
+ <section id="queuePanel" class="panel" hidden>
+  <div class="queuehead"><div><h2>Очередь фотографий</h2><p id="queueHelp"></p></div><button type="button" id="refresh" class="secondary">Обновить</button></div>
+  <div id="cards" class="cards"><p>Загрузка…</p></div>
+ </section>
+</main>
+<footer class="shell footer">Пилот v0.3 · Доступ только сотрудникам · Утверждение фото не публикует его на сайте</footer>
+</body></html>
