@@ -44,6 +44,7 @@ jobs:
         run: |
           node test_core.cjs
           node test_ui.cjs
+          node test_soups.cjs
       - name: Run original Chromium smoke test
         working-directory: _menu_src
         shell: bash
