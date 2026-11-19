@@ -14,9 +14,14 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageChops
 
 PUBLIC_FILES = (
-    "index.html", "start.html", "core.js", "app.js",
+    "index.html", "start.html", "soups.html", "core.js", "app.js",
     "products.json", "recipes.json", "manifest.webmanifest",
     "sw.js", "favicon.ico",
+)
+# Only these 18 public editorial images may be copied from the source repo.
+SOUP_IDS = (
+    "derevenskiy", "meksikanskiy", "finskiy", "vengerskiy",
+    "kukuruznyy", "italyanskiy", "syrnyy", "turetskiy", "frikadelki",
 )
 IMAGE_EXTS = {".png", ".webp", ".jpg", ".jpeg", ".svg", ".ico"}
 
@@ -65,6 +70,23 @@ def main():
     for item in (src / "assets").iterdir():
         if item.is_file() and not item.is_symlink() and item.suffix.lower() in IMAGE_EXTS:
             shutil.copy2(item, dest / "assets" / item.name)
+    # Editorial soup collection is isolated from live products and the 1C basket.
+    # Reject symlinks, unknown extensions and suspiciously large files.
+    soup_source = src / "assets" / "soups"
+    soup_target = dest / "assets" / "soups"
+    if not soup_source.is_dir() or soup_source.is_symlink():
+        raise SystemExit("Missing or unsafe source assets/soups folder")
+    soup_target.mkdir(parents=True)
+    for soup_id in SOUP_IDS:
+        for kind in ("card", "photo"):
+            name = f"{soup_id}-{kind}.jpg"
+            original = soup_source / name
+            if not original.is_file() or original.is_symlink():
+                raise SystemExit(f"Missing or unsafe public soup image: {name}")
+            data = original.read_bytes()
+            if len(data) < 30000 or len(data) > 1500000 or not data.startswith(bytes.fromhex("ffd8ff")):
+                raise SystemExit(f"Unexpected image encoding or size: {name}")
+            (soup_target / name).write_bytes(data)
     # A true same-site return link, while preserving the original menu app logic.
     for name in ("index.html", "start.html"):
         page = (dest / name).read_text(encoding="utf-8")
